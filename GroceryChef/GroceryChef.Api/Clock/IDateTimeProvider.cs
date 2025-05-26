@@ -2,7 +2,7 @@
 
 public interface IDateTimeProvider
 {
-    public DateTime UtcNow { get; }
+    DateTime UtcNow { get; }
 }
 
 internal sealed class DateTimeProvider : IDateTimeProvider
