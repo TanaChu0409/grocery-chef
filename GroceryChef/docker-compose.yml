@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  grocerychef.api:
+    image: ${DOCKER_REGISTRY-}grocerychefapi
+    container_name: grocerychef.api
+    build:
+      context: .
+      dockerfile: GroceryChef.Api/Dockerfile
+    ports:
+      - 5000:8080
+      - 5001:8081
+    depends_on:
+      - grocerychef.database
+
+  grocerychef.database:
+    image: postgres:17.2
+    container_name: grocerychef.database
+    environment:
+      POSTGRES_DB: grocerychef
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./.containers/postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  grocerychef.aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.0
+    container_name: grocerychef.aspire-dashboard
+    environment:
+      DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: true
+    ports:
+      - 18888:18888

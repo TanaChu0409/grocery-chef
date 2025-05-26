@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroceryChef.Api", "GroceryChef.Api\GroceryChef.Api.csproj", "{6DC783DB-18B9-41BF-9162-10AF8F0B6967}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0E2818AF-D555-4285-AB0E-5EC777F1774B}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		nuget.config = nuget.config
+	EndProjectSection
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{E126F21F-A6BC-4E91-911D-8D912B6F0C7E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6DC783DB-18B9-41BF-9162-10AF8F0B6967}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DC783DB-18B9-41BF-9162-10AF8F0B6967}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DC783DB-18B9-41BF-9162-10AF8F0B6967}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DC783DB-18B9-41BF-9162-10AF8F0B6967}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E126F21F-A6BC-4E91-911D-8D912B6F0C7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E126F21F-A6BC-4E91-911D-8D912B6F0C7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E126F21F-A6BC-4E91-911D-8D912B6F0C7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E126F21F-A6BC-4E91-911D-8D912B6F0C7E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0ED41596-7E69-4F11-ABBD-83842FFDB3E6}
+	EndGlobalSection
+EndGlobal
