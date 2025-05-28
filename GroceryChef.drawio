@@ -1,9 +1,9 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.5 Chrome/134.0.6998.205 Electron/35.3.0 Safari/537.36" version="27.0.5">
   <diagram name="Page-1" id="JOU_ey2y7Ef1f-dNLchi">
-    <mxGraphModel dx="2148" dy="696" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="2343" dy="656" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
-        <mxCell id="1" parent="0" />
+        <mxCell id="1" style="" parent="0" />
         <mxCell id="HMszOZsf1zMzUZQNafwa-1" value="Recipes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;fontSize=17;" parent="1" vertex="1">
           <mxGeometry x="160" y="130" width="120" height="60" as="geometry" />
         </mxCell>
@@ -22,7 +22,7 @@
         <mxCell id="HMszOZsf1zMzUZQNafwa-6" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Ingredients&lt;/h1&gt;&lt;p&gt;Name&lt;/p&gt;&lt;p&gt;Shelf life&lt;/p&gt;&lt;p&gt;IsAllergy&lt;/p&gt;" style="text;html=1;overflow=hidden;rounded=0;spacing=2;whiteSpace=wrap;strokeColor=default;" parent="1" vertex="1">
           <mxGeometry x="470" y="230" width="180" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="HMszOZsf1zMzUZQNafwa-7" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Carts&lt;/span&gt;&lt;/h1&gt;&lt;p style=&quot;margin-top: 0px;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 12px; font-weight: normal;&quot;&gt;Name&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Ingredient&lt;/p&gt;&lt;p&gt;Amount&lt;/p&gt;" style="text;html=1;overflow=hidden;rounded=0;spacing=2;whiteSpace=wrap;strokeColor=default;" parent="1" vertex="1">
+        <mxCell id="HMszOZsf1zMzUZQNafwa-7" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Carts&lt;/span&gt;&lt;/h1&gt;&lt;p style=&quot;margin-top: 0px;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 12px; font-weight: normal;&quot;&gt;Name&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Ingredient&lt;/p&gt;" style="text;html=1;overflow=hidden;rounded=0;spacing=2;whiteSpace=wrap;strokeColor=default;" parent="1" vertex="1">
           <mxGeometry x="290" y="390" width="180" height="120" as="geometry" />
         </mxCell>
         <mxCell id="HMszOZsf1zMzUZQNafwa-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" parent="1" source="HMszOZsf1zMzUZQNafwa-8" target="HMszOZsf1zMzUZQNafwa-1" edge="1">
@@ -31,7 +31,7 @@
         <mxCell id="HMszOZsf1zMzUZQNafwa-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" parent="1" source="HMszOZsf1zMzUZQNafwa-8" target="HMszOZsf1zMzUZQNafwa-3" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="HMszOZsf1zMzUZQNafwa-8" value="RecipieIngredient" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;" parent="1" vertex="1">
+        <mxCell id="HMszOZsf1zMzUZQNafwa-8" value="RecipeIngredient" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;" parent="1" vertex="1">
           <mxGeometry x="45" y="210" width="115" height="60" as="geometry" />
         </mxCell>
         <mxCell id="HMszOZsf1zMzUZQNafwa-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" parent="1" source="HMszOZsf1zMzUZQNafwa-9" target="HMszOZsf1zMzUZQNafwa-2" edge="1">
@@ -40,17 +40,20 @@
         <mxCell id="HMszOZsf1zMzUZQNafwa-9" value="CartIngredient" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;" parent="1" vertex="1">
           <mxGeometry x="45" y="384" width="115" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="bbvA6-XSSEJl-vqrYHCZ-1" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;RecipieIngredient&lt;/h1&gt;&lt;p&gt;RecipeId&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;IngredientId&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Amount&lt;/p&gt;&lt;p&gt;Unit&lt;/p&gt;" style="text;html=1;overflow=hidden;rounded=0;spacing=2;whiteSpace=wrap;strokeColor=default;" vertex="1" parent="1">
+        <mxCell id="bbvA6-XSSEJl-vqrYHCZ-1" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;RecipeIngredient&lt;/h1&gt;&lt;p&gt;RecipeId&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;IngredientId&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Amount&lt;/p&gt;&lt;p&gt;Unit&lt;/p&gt;" style="text;html=1;overflow=hidden;rounded=0;spacing=2;whiteSpace=wrap;strokeColor=default;" vertex="1" parent="1">
           <mxGeometry x="-180" y="110" width="210" height="160" as="geometry" />
         </mxCell>
-        <mxCell id="bbvA6-XSSEJl-vqrYHCZ-2" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;CartIngredient&lt;/h1&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;IngredientId&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Amount&lt;/p&gt;" style="text;html=1;overflow=hidden;rounded=0;spacing=2;whiteSpace=wrap;strokeColor=default;" vertex="1" parent="1">
+        <mxCell id="bbvA6-XSSEJl-vqrYHCZ-2" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;CartIngredient&lt;/h1&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;IngredientId&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Amount&lt;/p&gt;&lt;p&gt;IsBought&lt;/p&gt;" style="text;html=1;overflow=hidden;rounded=0;spacing=2;whiteSpace=wrap;strokeColor=default;" vertex="1" parent="1">
           <mxGeometry x="-180" y="384" width="210" height="160" as="geometry" />
         </mxCell>
-        <mxCell id="bbvA6-XSSEJl-vqrYHCZ-3" value="這裡先別做這麼快" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeWidth=5;fontSize=19;verticalAlign=bottom;" vertex="1" parent="1">
-          <mxGeometry x="-200" y="370" width="690" height="210" as="geometry" />
-        </mxCell>
-        <mxCell id="bbvA6-XSSEJl-vqrYHCZ-4" value="購物清單是否需要一群一群，&lt;br&gt;可各自新增購物清單" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;strokeColor=default;strokeWidth=2;" vertex="1" parent="1">
+        <mxCell id="bbvA6-XSSEJl-vqrYHCZ-4" value="購物清單需要一群一群，&lt;br&gt;可各自新增購物清單。" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;strokeColor=default;strokeWidth=2;" vertex="1" parent="1">
           <mxGeometry x="500" y="399" width="170" height="71" as="geometry" />
+        </mxCell>
+        <mxCell id="bbvA6-XSSEJl-vqrYHCZ-6" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#FFB700;" edge="1" parent="1" source="bbvA6-XSSEJl-vqrYHCZ-5" target="HMszOZsf1zMzUZQNafwa-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bbvA6-XSSEJl-vqrYHCZ-5" value="But how to import ingrdients from recipes?" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;strokeColor=#FFB700;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="390" y="560" width="170" height="71" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

@@ -4,6 +4,8 @@ namespace GroceryChef.Api.Entities;
 
 public sealed class Recipe
 {
+    private readonly List<Ingredient> _ingredients = [];
+
     private Recipe()
     {
     }
@@ -15,6 +17,7 @@ public sealed class Recipe
     public bool IsArchived { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
+    public IReadOnlyCollection<Ingredient> Ingredients => _ingredients;
 
     public static Recipe Create(
         string name,

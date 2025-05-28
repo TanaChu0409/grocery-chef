@@ -15,5 +15,9 @@ internal sealed class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
         builder.Property(r => r.Description).HasMaxLength(100);
 
         builder.Property(r => r.Content).HasMaxLength(3000);
+
+        builder.HasMany(r => r.Ingredients)
+            .WithMany()
+            .UsingEntity<RecipeIngredient>();
     }
 }
