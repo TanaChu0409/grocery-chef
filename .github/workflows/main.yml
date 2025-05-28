@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env:
+  DOTNET_VERSION: "8.x"
+
+jobs:
+  build:
+    runs-on: ubuntu-lastest
+
+    defaults:
+      run:
+        working-directory: GroceryChef
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: $${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore GroceryChef.sln
+
+      - name: Build
+        run: dotnet build GroceryChef.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test GroceryChef.sln --configuration Release --no-restore --no-build
+
+      - name: Publish
+        run: dotnet publish GroceryChef.sln --configuration Release --no-restore --no-build
