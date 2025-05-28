@@ -7,6 +7,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     : DbContext(options)
 {
     public DbSet<Recipe> Recipes { get; set; }
+    public DbSet<Ingredient> Ingredients { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
