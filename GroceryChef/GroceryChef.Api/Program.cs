@@ -1,8 +1,10 @@
 using GroceryChef.Api;
+using GroceryChef.Api.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.AddApiService()
     .AddErrorHandling()
+    .AddDatabase()
     .AddObservability()
     .AddApplicationServices();
 
@@ -12,6 +14,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    await app.ApplyMigrationsAsync();
 }
 
 app.UseHttpsRedirection();

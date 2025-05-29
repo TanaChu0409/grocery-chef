@@ -1,9 +1,11 @@
-﻿using GroceryChef.Api.Database;
+﻿using FluentValidation;
+using GroceryChef.Api.Database;
 using GroceryChef.Api.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
+using Npgsql;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -42,6 +44,7 @@ public static class DependencyInjection
     {
         builder.Services.AddProblemDetails();
 
+        builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         return builder;
     }
@@ -65,8 +68,7 @@ public static class DependencyInjection
             .WithTracing(tracing => tracing
                 .AddHttpClientInstrumentation()
                 .AddAspNetCoreInstrumentation()
-                // dont forget add npgsql
-                )
+                .AddNpgsql())
             .WithMetrics(metrics => metrics
                 .AddHttpClientInstrumentation()
                 .AddAspNetCoreInstrumentation()
@@ -84,6 +86,8 @@ public static class DependencyInjection
 
     public static WebApplicationBuilder AddApplicationServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
         builder.Services.AddHttpContextAccessor();
 
         return builder;

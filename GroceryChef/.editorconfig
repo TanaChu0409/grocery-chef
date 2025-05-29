@@ -86,6 +86,9 @@ csharp_style_deconstructed_variable_declaration = true:suggestion
 # CA1862: Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
 dotnet_diagnostic.CA1862.severity = none
 
+# S2326: Unused type parameters should be removed
+dotnet_diagnostic.S2326.severity = none
+
 [*.{cs,vb}]
 dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
 dotnet_style_prefer_simplified_interpolation = true:suggestion

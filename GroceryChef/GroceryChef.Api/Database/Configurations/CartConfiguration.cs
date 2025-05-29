@@ -11,5 +11,9 @@ internal sealed class CartConfiguration : IEntityTypeConfiguration<Cart>
         builder.HasKey(c => c.Id);
 
         builder.Property(c => c.Name).HasMaxLength(500);
+
+        builder.HasMany(c => c.Ingredients)
+            .WithMany()
+            .UsingEntity<CartIngredient>();
     }
 }

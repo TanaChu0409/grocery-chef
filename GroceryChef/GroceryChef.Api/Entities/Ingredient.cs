@@ -1,4 +1,7 @@
-﻿namespace GroceryChef.Api.Entities;
+﻿using System.Linq.Expressions;
+using GroceryChef.Api.DTOs.Ingredients;
+
+namespace GroceryChef.Api.Entities;
 
 public sealed class Ingredient
 {
@@ -28,4 +31,17 @@ public sealed class Ingredient
             CreateAtUtc = createAtUtc,
         };
     }
+
+    public static Expression<Func<Ingredient, IngredientDto>> ProjectToDto() =>
+        i => i.ToDto();
+    public IngredientDto ToDto() => 
+        new()
+        {
+            Id = Id,
+            Name = Name,
+            ShelfLife = ShelfLife,
+            IsAllergy = IsAllergy,
+            CreateAtUtc = CreateAtUtc,
+            UpdatedAtUtc = UpdatedAtUtc
+        };
 }
