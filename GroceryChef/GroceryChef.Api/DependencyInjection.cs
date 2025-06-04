@@ -1,6 +1,14 @@
-﻿using FluentValidation;
+﻿using Asp.Versioning;
+using FluentValidation;
+using GroceryChef.Api.Clock;
 using GroceryChef.Api.Database;
+using GroceryChef.Api.DTOs.Ingredients;
+using GroceryChef.Api.Entities;
 using GroceryChef.Api.Middleware;
+using GroceryChef.Api.Services;
+using GroceryChef.Api.Services.Sorting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.OpenApi.Models;
@@ -24,6 +32,32 @@ public static class DependencyInjection
         .AddNewtonsoftJson(options =>
             options.SerializerSettings.ContractResolver =
                 new CamelCasePropertyNamesContractResolver());
+
+        builder.Services.Configure<MvcOptions>(options =>
+        {
+            NewtonsoftJsonOutputFormatter formatters = options.OutputFormatters
+                .OfType<NewtonsoftJsonOutputFormatter>()
+                .First();
+
+            formatters.SupportedMediaTypes.Add(CustomMediaTypeNames.Application.JsonV1);
+            formatters.SupportedMediaTypes.Add(CustomMediaTypeNames.Application.HateoasJsonV1);
+        });
+
+        builder.Services
+            .AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1.0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+                options.ApiVersionSelector = new DefaultApiVersionSelector(options);
+
+                options.ApiVersionReader = ApiVersionReader.Combine(
+                    new MediaTypeApiVersionReader(),
+                    new MediaTypeApiVersionReaderBuilder()
+                        .Template("application/vnd.grocerychef.hateoas.{version}+json")
+                        .Build());
+            })
+            .AddMvc();
 
         builder.Services.AddSwaggerGen(options =>
         {
@@ -61,6 +95,7 @@ public static class DependencyInjection
 
         return builder;
     }
+
     public static WebApplicationBuilder AddObservability(this WebApplicationBuilder builder)
     {
         builder.Services.AddOpenTelemetry()
@@ -88,7 +123,17 @@ public static class DependencyInjection
     {
         builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
+        builder.Services.AddTransient<SortMappingProvider>();
+
+        builder.Services.AddSingleton<ISortMappingDefinition, SortMappingDefinition<IngredientDto, Ingredient>>(_ =>
+            Ingredient.SortMapping);
+
+        builder.Services.AddTransient<DataSharpingService>();
+
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddTransient<LinkService>();
+
+        builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
         return builder;
     }

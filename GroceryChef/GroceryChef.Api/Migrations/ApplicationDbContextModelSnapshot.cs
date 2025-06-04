@@ -93,8 +93,8 @@ namespace GroceryChef.Api.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("name");
 
-                    b.Property<DateTime>("ShelfLife")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<DateOnly>("ShelfLife")
+                        .HasColumnType("date")
                         .HasColumnName("shelf_life");
 
                     b.Property<DateTime?>("UpdatedAtUtc")

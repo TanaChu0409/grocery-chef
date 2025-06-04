@@ -18,4 +18,27 @@ public sealed class SortMappingProvider(IEnumerable<ISortMappingDefinition> sort
 
         return sortMappingDefination.Mappings;
     }
+
+    public bool ValidateMappings<TSource, TDestination>(string? sort)
+        where TSource : class
+        where TDestination : class
+    {
+        if (string.IsNullOrWhiteSpace(sort))
+        {
+            return true;
+        }
+
+       var sortFields = sort
+            .Split(',')
+            .Select(f => f.Trim().Split(' ')[0])
+            .Where(f => !string.IsNullOrWhiteSpace(f))
+            .ToList();
+
+        SortMapping[] mapping = GetMappings<TSource, TDestination>();
+
+        return sortFields
+            .All(f =>
+                mapping.Any(m =>
+                    m.SortField.Equals(f, StringComparison.OrdinalIgnoreCase)));
+    }
 }

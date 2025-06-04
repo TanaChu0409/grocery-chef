@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GroceryChef.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250529034525_Create")]
+    [Migration("20250603073042_Create")]
     partial class Create
     {
         /// <inheritdoc />
@@ -96,8 +96,8 @@ namespace GroceryChef.Api.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("name");
 
-                    b.Property<DateTime>("ShelfLife")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<DateOnly>("ShelfLife")
+                        .HasColumnType("date")
                         .HasColumnName("shelf_life");
 
                     b.Property<DateTime?>("UpdatedAtUtc")
