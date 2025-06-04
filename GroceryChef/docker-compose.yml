@@ -12,6 +12,9 @@ services:
       - 5001:8081
     depends_on:
       - grocerychef.database
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://grocerychef.aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
 
   grocerychef.database:
     image: postgres:17.2

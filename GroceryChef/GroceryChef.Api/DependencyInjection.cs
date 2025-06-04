@@ -132,7 +132,6 @@ public static class DependencyInjection
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddTransient<LinkService>();
-
         builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
         return builder;

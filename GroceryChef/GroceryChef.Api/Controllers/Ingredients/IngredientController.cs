@@ -55,14 +55,11 @@ public sealed class IngredientController(
                 query.Search == null ||
                 i.Name.ToLower().Contains(query.Search))
             .Where(i =>
-                query.IsAllergy != null &&
+                query.IsAllergy == null ||
                 i.IsAllergy == query.IsAllergy.Value)
             .Where(i =>
-                query.ShelfLifeOfBefore != null &&
-                i.ShelfLife >= query.ShelfLifeOfBefore.Value)
-            .Where(i =>
-                query.ShelfLifeOfAfter != null &&
-                i.ShelfLife <= query.ShelfLifeOfAfter.Value)
+                query.ShelfLifeOfDate == null ||
+                i.ShelfLifeOfDate == query.ShelfLifeOfDate.Value)
             .ApplySort(query.Sort, sortMappings)
             .Select(Ingredient.ProjectToDto());
 
@@ -143,7 +140,7 @@ public sealed class IngredientController(
 
         var ingredient = Ingredient.Create(
             createIngredient.Name,
-            createIngredient.ShelfLife,
+            createIngredient.ShelfLifeOfDate,
             createIngredient.IsAllergy,
             dateTimeProvider.UtcNow);
 
@@ -208,7 +205,7 @@ public sealed class IngredientController(
             new UpdateIngredientDto
             {
                 Name = ingredientDto.Name,
-                ShelfLife = ingredientDto.ShelfLife,
+                ShelfLifeOfDate = ingredientDto.ShelfLifeOfDate,
                 IsAllergy = ingredientDto.IsAllergy
             });
 
@@ -249,7 +246,8 @@ public sealed class IngredientController(
                 q = parameters.Search,
                 sort = parameters.Sort,
                 isAllergy = parameters.IsAllergy,
-            })
+            }),
+            linkService.Create(nameof(CreateIngredient), "create", HttpMethods.Post),
         ];
 
         if (hasNextPage)
@@ -293,7 +291,10 @@ public sealed class IngredientController(
     {
         return
         [
-            linkService.Create(nameof(GetIngredients), "self", HttpMethods.Get, new { id, fields })
+            linkService.Create(nameof(GetIngredient), "self", HttpMethods.Get, new { id, fields }),
+            linkService.Create(nameof(UpdateIngredient), "update", HttpMethods.Put, new { id }),
+            linkService.Create(nameof(PatchIngredient), "partial-update", HttpMethods.Patch, new { id }),
+            linkService.Create(nameof(DeleteIngredient), "delete", HttpMethods.Delete, new { id }),
         ];
     }
 }

@@ -8,6 +8,5 @@ public sealed record IngredientQueryParameters : BaseQueryParameters
     [FromQuery(Name = "q")]
     public string? Search { get; set; }
     public bool? IsAllergy { get; init; }
-    public DateOnly? ShelfLifeOfBefore { get; init; }
-    public DateOnly? ShelfLifeOfAfter { get; init; }
+    public int? ShelfLifeOfDate { get; init; }
 }

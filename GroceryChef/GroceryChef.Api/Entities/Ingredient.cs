@@ -12,14 +12,14 @@ public sealed class Ingredient
 
     public string Id { get; private set; }
     public string Name { get; private set; }
-    public DateOnly ShelfLife { get; private set; }
+    public int ShelfLifeOfDate { get; private set; }
     public bool IsAllergy { get; private set; }
     public DateTime CreateAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
 
     public static Ingredient Create(
         string name,
-        DateOnly shelfLife,
+        int shelfLifeOfDate,
         bool isAllergy,
         DateTime createAtUtc)
     {
@@ -27,7 +27,7 @@ public sealed class Ingredient
         {
             Id = $"I_{Ulid.NewUlid()}",
             Name = name,
-            ShelfLife = shelfLife,
+            ShelfLifeOfDate = shelfLifeOfDate,
             IsAllergy = isAllergy,
             CreateAtUtc = createAtUtc,
         };
@@ -36,7 +36,7 @@ public sealed class Ingredient
     public void UpdateFromDto(UpdateIngredientDto updateIngredient)
     {
         Name = updateIngredient.Name;
-        ShelfLife = updateIngredient.ShelfLife;
+        ShelfLifeOfDate = updateIngredient.ShelfLifeOfDate;
         IsAllergy = updateIngredient.IsAllergy;
         UpdatedAtUtc = DateTime.UtcNow;
     }
@@ -49,9 +49,9 @@ public sealed class Ingredient
         {
             Id = Id,
             Name = Name,
-            ShelfLife = ShelfLife,
+            ShelfLifeOfDate = ShelfLifeOfDate,
             IsAllergy = IsAllergy,
-            CreateAtUtc = CreateAtUtc,
+            CreatedAtUtc = CreateAtUtc,
             UpdatedAtUtc = UpdatedAtUtc
         };
 
@@ -60,8 +60,8 @@ public sealed class Ingredient
         Mappings =
         [
             new SortMapping(nameof(IngredientDto.Name), nameof(Name)),
-            new SortMapping(nameof(IngredientDto.ShelfLife), nameof(ShelfLife)),
-            new SortMapping(nameof(IngredientDto.CreateAtUtc), nameof(CreateAtUtc)),
+            new SortMapping(nameof(IngredientDto.ShelfLifeOfDate), nameof(ShelfLifeOfDate)),
+            new SortMapping(nameof(IngredientDto.CreatedAtUtc), nameof(CreateAtUtc)),
             new SortMapping(nameof(IngredientDto.UpdatedAtUtc), nameof(UpdatedAtUtc))
         ]
     };
