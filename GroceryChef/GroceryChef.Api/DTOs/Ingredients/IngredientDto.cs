@@ -12,3 +12,13 @@ public sealed record IngredientDto : ILinkResponse
     public DateTime? UpdatedAtUtc { get; init; }
     public List<LinkDto> Links { get; set; }
 }
+
+public sealed record IngredientWithoutLinkDto
+{
+    public required string Id { get; init; }
+    public required string Name { get; init; } = string.Empty;
+    public required int ShelfLifeOfDate { get; init; }
+    public required bool IsAllergy { get; init; }
+    public required DateTime CreatedAtUtc { get; init; }
+    public DateTime? UpdatedAtUtc { get; init; }
+}

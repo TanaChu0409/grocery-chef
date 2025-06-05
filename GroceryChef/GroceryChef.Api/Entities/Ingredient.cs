@@ -52,7 +52,8 @@ public sealed class Ingredient
             ShelfLifeOfDate = ShelfLifeOfDate,
             IsAllergy = IsAllergy,
             CreatedAtUtc = CreateAtUtc,
-            UpdatedAtUtc = UpdatedAtUtc
+            UpdatedAtUtc = UpdatedAtUtc,
+            Links = []
         };
 
     public static readonly SortMappingDefinition<IngredientDto, Ingredient> SortMapping = new()

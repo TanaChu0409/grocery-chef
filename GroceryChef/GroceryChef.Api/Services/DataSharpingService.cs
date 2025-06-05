@@ -70,7 +70,7 @@ public sealed class DataSharpingService
 
             if (linksFactory is not null)
             {
-                shapeObject["links"] = linksFactory(entity);
+                shapeObject["Links"] = linksFactory(entity);
             }
 
             shapedObjects.Add((ExpandoObject)shapeObject);

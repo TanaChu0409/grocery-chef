@@ -119,14 +119,13 @@ public sealed class IngredientController(
             return NotFound();
         }
 
-        ExpandoObject shapedIngredient = dataSharpingService.ShapeData(ingredient, fields);
-
         if (accept == CustomMediaTypeNames.Application.HateoasJsonV1)
         {
             List<LinkDto> links = CreateLinksForIngredient(id, fields);
-
-            shapedIngredient.TryAdd("links", links);
+            ingredient.Links = links;
         }
+
+        ExpandoObject shapedIngredient = dataSharpingService.ShapeData(ingredient, fields);
 
         return Ok(shapedIngredient);
     }
@@ -232,6 +231,7 @@ public sealed class IngredientController(
 
         return NoContent();
     }
+
     private List<LinkDto> CreateLinksForIngredients(
         IngredientQueryParameters parameters,
         bool hasNextPage,
