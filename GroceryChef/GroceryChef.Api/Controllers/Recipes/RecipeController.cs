@@ -103,12 +103,11 @@ public sealed class RecipeController(
                 detail: $"The provided data shaping fields aren't valid: '{fields}'");
         }
 
-        RecipeDto? recipe = await dbContext
+        RecipeWithIngredientsDto? recipe = await dbContext
             .Recipes
-            .Where(r => 
-                r.Id == id &&
-                !r.IsArchived)
-            .Select(Recipe.ProjectToDto())
+            .Include(r => r.Ingredients)
+            .Where(r => r.Id == id)
+            .Select(Recipe.ProjectToDtoWithIngredients())
             .FirstOrDefaultAsync();
 
         if (recipe is null)
@@ -116,13 +115,13 @@ public sealed class RecipeController(
             return NotFound();
         }
 
+        ExpandoObject shapedRecipe = dataSharpingService.ShapeData(recipe, fields);
+
         if (accept == CustomMediaTypeNames.Application.HateoasJsonV1)
         {
             List<LinkDto> links = CreateLinksForRecipe(id, fields);
-            recipe.Links = links;
+            shapedRecipe.TryAdd("links", links);
         }
-
-        ExpandoObject shapedRecipe = dataSharpingService.ShapeData(recipe, fields);
 
         return Ok(shapedRecipe);
     }
@@ -136,7 +135,7 @@ public sealed class RecipeController(
 
         var recipe = Recipe.Create(
             createRecipe.Name,
-            createRecipe.Descriptions,
+            createRecipe.Description,
             createRecipe.Content,
             dateTimeProvider.UtcNow);
 
@@ -202,7 +201,7 @@ public sealed class RecipeController(
             {
                 Name = recipeDto.Name,
                 Content = recipeDto.Content,
-                Descriptions = recipeDto.Descriptions
+                Description = recipeDto.Description
             });
 
         await dbContext.SaveChangesAsync();
@@ -280,8 +279,9 @@ public sealed class RecipeController(
 
         return links;
     }
+
     private List<LinkDto> CreateLinksForRecipe(
-        string id, 
+        string id,
         string? fields)
     {
         return
@@ -290,6 +290,12 @@ public sealed class RecipeController(
             linkService.Create(nameof(UpdateRecipe), "update", HttpMethods.Put, new { id }),
             linkService.Create(nameof(PatchRecipe), "partial-update", HttpMethods.Put, new { id }),
             linkService.Create(nameof(DeleteRecipe), "delete", HttpMethods.Delete, new { id }),
+            linkService.Create(
+                nameof(RecipeIngredientsController.UpsertRecipeIngredients),
+                "upsert-ingredients",
+                HttpMethods.Put,
+                new { recipeId = id },
+                RecipeIngredientsController.Name)
         ];
     }
 }

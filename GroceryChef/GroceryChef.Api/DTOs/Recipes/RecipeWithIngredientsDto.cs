@@ -1,8 +1,6 @@
-﻿using GroceryChef.Api.DTOs.Common;
+﻿namespace GroceryChef.Api.DTOs.Recipes;
 
-namespace GroceryChef.Api.DTOs.Recipes;
-
-public sealed record RecipeDto : ILinkResponse
+public sealed record RecipeWithIngredientsDto
 {
     public required string Id { get; init; }
     public required string Name { get; init; } = string.Empty;
@@ -11,5 +9,5 @@ public sealed record RecipeDto : ILinkResponse
     public required bool IsArchived { get; init; }
     public required DateTime CreatedAtUtc { get; init; }
     public DateTime? UpdatedAtUtc { get; init; }
-    public List<LinkDto> Links { get; set; }
+    public required string[] IngredientsWithUnit { get; init; }
 }

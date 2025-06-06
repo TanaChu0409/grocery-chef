@@ -16,7 +16,7 @@ public sealed class CreateRecipeDtoValidator : AbstractValidator<CreateRecipeDto
             .MaximumLength(3000)
             .WithMessage("Recipe content must be provided and cannot exceed 3000 characters.");
 
-        RuleFor(x => x.Descriptions)
+        RuleFor(x => x.Description)
             .MaximumLength(100)
             .WithMessage("Recipe description cannot exceed 100 characters.");
     }

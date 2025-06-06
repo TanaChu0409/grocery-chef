@@ -12,7 +12,7 @@ public sealed class CreateIngredientDtoValidator : AbstractValidator<CreateIngre
             .WithMessage("Ingredient name must be provided and cannot exceed 500 characters.");
 
         RuleFor(x => x.ShelfLifeOfDate)
-            .GreaterThan(0)
+            .GreaterThan(-1)
             .WithMessage("Shelf life of date must be greater than 0 days.");
 
         RuleFor(x => x.IsAllergy)

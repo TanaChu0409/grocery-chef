@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using GroceryChef.Api.DTOs.RecipeIngredients;
 using GroceryChef.Api.DTOs.Recipes;
 using GroceryChef.Api.Services.Sorting;
 
@@ -7,6 +8,7 @@ namespace GroceryChef.Api.Entities;
 
 public sealed class Recipe
 {
+    private readonly List<RecipeIngredient> _recipeIngredients = [];
     private readonly List<Ingredient> _ingredients = [];
 
     private Recipe()
@@ -20,6 +22,7 @@ public sealed class Recipe
     public bool IsArchived { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
+    public IReadOnlyCollection<RecipeIngredient> RecipeIngredients => _recipeIngredients;
     public IReadOnlyCollection<Ingredient> Ingredients => _ingredients;
 
     public static Recipe Create(
@@ -48,26 +51,74 @@ public sealed class Recipe
     {
         IsArchived = false;
     }
+
+    public void RemoveAllRecipeIngredients(List<string> upsertRecipeIngredientIds)
+    {
+        _recipeIngredients.RemoveAll(ri => !upsertRecipeIngredientIds.Contains(ri.IngredientId));
+    }
+
+    public void AddRecipeIngredients(
+        List<UpsertRecipeIngredientDetailDto> upsertRecipeIngredientDetails,
+        DateTime createdAtUtc)
+    {
+        _recipeIngredients.AddRange(
+            upsertRecipeIngredientDetails
+            .Select(uri => new RecipeIngredient
+            {
+                RecipeId = Id,
+                IngredientId = uri.IngredientId,
+                Amount = uri.Amount,
+                Unit = uri.Unit,
+                CreateAtUtc = createdAtUtc
+            }));
+    }
+
     public void UpdateFromDto(UpdateRecipeDto updateRecipe)
     {
         Name = updateRecipe.Name;
         Content = updateRecipe.Content;
-        Description = updateRecipe.Descriptions;
+        Description = updateRecipe.Description;
         UpdatedAtUtc = DateTime.UtcNow;
     }
+
     public static Expression<Func<Recipe, RecipeDto>> ProjectToDto() =>
         r => r.ToDto();
+
+    public static Expression<Func<Recipe, RecipeWithIngredientsDto>> ProjectToDtoWithIngredients() =>
+        r => r.ToDtoWithIngredients();
     public RecipeDto ToDto() =>
         new()
         {
             Id = Id,
             Name = Name,
             Content = Content,
-            Descriptions = Description,
+            Description = Description,
+            IsArchived = IsArchived,
             CreatedAtUtc = CreatedAtUtc,
             UpdatedAtUtc = UpdatedAtUtc,
             Links = []
         };
+
+    public RecipeWithIngredientsDto ToDtoWithIngredients() =>
+        new()
+        {
+            Id = Id,
+            Name = Name,
+            Content = Content,
+            Description = Description,
+            IsArchived = IsArchived,
+            CreatedAtUtc = CreatedAtUtc,
+            UpdatedAtUtc = UpdatedAtUtc,
+            IngredientsWithUnit = _recipeIngredients
+                .Select(ri => GetIngredientNameWithUnit(
+                    ri.IngredientId, 
+                    ri.Amount,
+                    ri.Unit))
+                .ToArray()
+        };
+
+    private string GetIngredientNameWithUnit(string ingredientId, decimal amount, RecipeUnit unit) =>
+        $"{_ingredients.FirstOrDefault(i => i.Id == ingredientId)?.Name} {amount} ({RecipeUnitExtension.GetUnitName(unit)})";
 
     public static readonly SortMappingDefinition<RecipeDto, Recipe> SortMapping = new()
     {
@@ -75,7 +126,7 @@ public sealed class Recipe
         [
             new SortMapping(nameof(RecipeDto.Name), nameof(Name)),
             new SortMapping(nameof(RecipeDto.Content), nameof(Content)),
-            new SortMapping(nameof(RecipeDto.Descriptions), nameof(Description)),
+            new SortMapping(nameof(RecipeDto.Description), nameof(Description)),
             new SortMapping(nameof(RecipeDto.CreatedAtUtc), nameof(CreatedAtUtc)),
             new SortMapping(nameof(RecipeDto.UpdatedAtUtc), nameof(UpdatedAtUtc))
         ]
