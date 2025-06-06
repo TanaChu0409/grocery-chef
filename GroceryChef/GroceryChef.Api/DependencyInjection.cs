@@ -3,6 +3,7 @@ using FluentValidation;
 using GroceryChef.Api.Clock;
 using GroceryChef.Api.Database;
 using GroceryChef.Api.DTOs.Ingredients;
+using GroceryChef.Api.DTOs.Recipes;
 using GroceryChef.Api.Entities;
 using GroceryChef.Api.Middleware;
 using GroceryChef.Api.Services;
@@ -127,6 +128,8 @@ public static class DependencyInjection
 
         builder.Services.AddSingleton<ISortMappingDefinition, SortMappingDefinition<IngredientDto, Ingredient>>(_ =>
             Ingredient.SortMapping);
+        builder.Services.AddSingleton<ISortMappingDefinition, SortMappingDefinition<RecipeDto, Recipe>>(_ =>
+            Recipe.SortMapping);
 
         builder.Services.AddTransient<DataSharpingService>();
 

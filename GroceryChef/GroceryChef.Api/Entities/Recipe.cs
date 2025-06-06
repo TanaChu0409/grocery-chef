@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq.Expressions;
+using GroceryChef.Api.DTOs.Recipes;
+using GroceryChef.Api.Services.Sorting;
 
 namespace GroceryChef.Api.Entities;
 
@@ -35,4 +38,46 @@ public sealed class Recipe
             IsArchived = false
         };
     }
+
+    public void Archived()
+    {
+        IsArchived = true;
+    }
+
+    public void Restore()
+    {
+        IsArchived = false;
+    }
+    public void UpdateFromDto(UpdateRecipeDto updateRecipe)
+    {
+        Name = updateRecipe.Name;
+        Content = updateRecipe.Content;
+        Description = updateRecipe.Descriptions;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+    public static Expression<Func<Recipe, RecipeDto>> ProjectToDto() =>
+        r => r.ToDto();
+    public RecipeDto ToDto() =>
+        new()
+        {
+            Id = Id,
+            Name = Name,
+            Content = Content,
+            Descriptions = Description,
+            CreatedAtUtc = CreatedAtUtc,
+            UpdatedAtUtc = UpdatedAtUtc,
+            Links = []
+        };
+
+    public static readonly SortMappingDefinition<RecipeDto, Recipe> SortMapping = new()
+    {
+        Mappings =
+        [
+            new SortMapping(nameof(RecipeDto.Name), nameof(Name)),
+            new SortMapping(nameof(RecipeDto.Content), nameof(Content)),
+            new SortMapping(nameof(RecipeDto.Descriptions), nameof(Description)),
+            new SortMapping(nameof(RecipeDto.CreatedAtUtc), nameof(CreatedAtUtc)),
+            new SortMapping(nameof(RecipeDto.UpdatedAtUtc), nameof(UpdatedAtUtc))
+        ]
+    };
 }
