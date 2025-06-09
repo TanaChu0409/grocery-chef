@@ -8,6 +8,10 @@ internal sealed class RecipeIngredientConfiguration : IEntityTypeConfiguration<R
 {
     public void Configure(EntityTypeBuilder<RecipeIngredient> builder)
     {
+        builder.Property(ri => ri.IngredientId).HasMaxLength(500);
+        
+        builder.Property(ri => ri.RecipeId).HasMaxLength(500);
+
         builder.Property(ri => ri.Amount)
             .HasPrecision(5, 2);
     }

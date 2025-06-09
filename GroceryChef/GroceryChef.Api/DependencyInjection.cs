@@ -2,6 +2,7 @@
 using FluentValidation;
 using GroceryChef.Api.Clock;
 using GroceryChef.Api.Database;
+using GroceryChef.Api.DTOs.Carts;
 using GroceryChef.Api.DTOs.Ingredients;
 using GroceryChef.Api.DTOs.Recipes;
 using GroceryChef.Api.Entities;
@@ -130,6 +131,8 @@ public static class DependencyInjection
             Ingredient.SortMapping);
         builder.Services.AddSingleton<ISortMappingDefinition, SortMappingDefinition<RecipeDto, Recipe>>(_ =>
             Recipe.SortMapping);
+        builder.Services.AddSingleton<ISortMappingDefinition, SortMappingDefinition<CartDto, Cart>>(_ =>
+            Cart.SortMapping);
 
         builder.Services.AddTransient<DataSharpingService>();
 

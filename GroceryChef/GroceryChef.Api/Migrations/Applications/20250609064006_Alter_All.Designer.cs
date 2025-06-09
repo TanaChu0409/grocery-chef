@@ -3,17 +3,20 @@ using System;
 using GroceryChef.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace GroceryChef.Api.Migrations
+namespace GroceryChef.Api.Migrations.Applications
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250609064006_Alter_All")]
+    partial class Alter_All
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,24 +33,16 @@ namespace GroceryChef.Api.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("name");
 
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
                     b.HasKey("Id")
-                        .HasName("pk_carts");
+                        .HasName("pk_cart");
 
-                    b.ToTable("carts", "grocerychef");
+                    b.ToTable("cart", "grocerychef");
                 });
 
             modelBuilder.Entity("GroceryChef.Api.Entities.CartIngredient", b =>
@@ -76,12 +71,12 @@ namespace GroceryChef.Api.Migrations
                         .HasColumnName("quantity");
 
                     b.HasKey("CartId", "IngredientsId")
-                        .HasName("pk_cart_ingredients");
+                        .HasName("pk_cart_ingredient");
 
                     b.HasIndex("IngredientsId")
-                        .HasDatabaseName("ix_cart_ingredients_ingredients_id");
+                        .HasDatabaseName("ix_cart_ingredient_ingredients_id");
 
-                    b.ToTable("cart_ingredients", "grocerychef");
+                    b.ToTable("cart_ingredient", "grocerychef");
                 });
 
             modelBuilder.Entity("GroceryChef.Api.Entities.Ingredient", b =>
@@ -202,14 +197,14 @@ namespace GroceryChef.Api.Migrations
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_cart_ingredients_carts_cart_id");
+                        .HasConstraintName("fk_cart_ingredient_cart_cart_id");
 
                     b.HasOne("GroceryChef.Api.Entities.Ingredient", null)
                         .WithMany()
                         .HasForeignKey("IngredientsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_cart_ingredients_ingredients_ingredients_id");
+                        .HasConstraintName("fk_cart_ingredient_ingredients_ingredients_id");
                 });
 
             modelBuilder.Entity("GroceryChef.Api.Entities.RecipeIngredient", b =>

@@ -10,6 +10,8 @@ internal sealed class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
     {
         builder.HasKey(r => r.Id);
 
+        builder.Property(r => r.Id).HasMaxLength(500);
+
         builder.Property(r => r.Name).HasMaxLength(500);
 
         builder.Property(r => r.Description).HasMaxLength(100);
