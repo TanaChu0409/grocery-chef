@@ -18,13 +18,17 @@ namespace GroceryChef.Api.Controllers.Recipes;
 [ApiController]
 [Route("recipes")]
 [ApiVersion(1.0)]
+[Produces(
+    MediaTypeNames.Application.Json,
+    CustomMediaTypeNames.Application.JsonV1,
+    CustomMediaTypeNames.Application.HateoasJson,
+    CustomMediaTypeNames.Application.HateoasJsonV1)]
 public sealed class RecipeController(
     ApplicationDbContext dbContext,
     LinkService linkService,
     IDateTimeProvider dateTimeProvider) : ControllerBase
 {
     [HttpGet]
-    [Produces(MediaTypeNames.Application.Json, CustomMediaTypeNames.Application.HateoasJsonV1)]
     public async Task<IActionResult> GetRecipes(
         [FromQuery] RecipeQueryParameters query,
         SortMappingProvider sortMappingProvider,
@@ -65,19 +69,18 @@ public sealed class RecipeController(
             .Take(query.PageSize)
             .ToListAsync();
 
-        bool includeLinks = query.Accept == CustomMediaTypeNames.Application.HateoasJsonV1;
         var paginationResult = new PaginationResult<ExpandoObject>
         {
             Items = dataSharpingService.ShapeCollectionData(
                 recipes,
                 query.Fields,
-                includeLinks ? r => CreateLinksForRecipe(r.Id, query.Fields) : null),
+                query.IncludeLinks ? r => CreateLinksForRecipe(r.Id, query.Fields) : null),
             Page = query.Page,
             PageSize = query.PageSize,
             TotalCount = totalCount
         };
 
-        if (includeLinks)
+        if (query.IncludeLinks)
         {
             paginationResult.Links = CreateLinksForRecipes(
                 query,
@@ -89,18 +92,16 @@ public sealed class RecipeController(
     }
 
     [HttpGet("{id}")]
-    [Produces(MediaTypeNames.Application.Json, CustomMediaTypeNames.Application.HateoasJsonV1)]
     public async Task<IActionResult> GetRecipe(
         string id,
-        string? fields,
-        [FromHeader(Name = "Accept")] string? accept,
+        RecipeQueryParameters query,
         DataSharpingService dataSharpingService)
     {
-        if (!dataSharpingService.Validate<RecipeDto>(fields))
+        if (!dataSharpingService.Validate<RecipeDto>(query.Fields))
         {
             return Problem(
                 statusCode: StatusCodes.Status400BadRequest,
-                detail: $"The provided data shaping fields aren't valid: '{fields}'");
+                detail: $"The provided data shaping fields aren't valid: '{query.Fields}'");
         }
 
         RecipeWithIngredientsDto? recipe = await dbContext
@@ -115,20 +116,28 @@ public sealed class RecipeController(
             return NotFound();
         }
 
-        ExpandoObject shapedRecipe = dataSharpingService.ShapeData(recipe, fields);
+        ExpandoObject shapedRecipe = dataSharpingService.ShapeData(recipe, query.Fields);
 
-        if (accept == CustomMediaTypeNames.Application.HateoasJsonV1)
+        if (query.IncludeLinks)
         {
-            List<LinkDto> links = CreateLinksForRecipe(id, fields);
+            List<LinkDto> links = CreateLinksForRecipe(id, query.Fields);
             shapedRecipe.TryAdd("links", links);
         }
 
         return Ok(shapedRecipe);
     }
 
+    [HttpGet("units")]
+    public ActionResult<Dictionary<int, string>> GetRecipeUnits()
+    {
+        return Ok(RecipeUnitExtension.GetOptions());
+    }
+
+
     [HttpPost]
     public async Task<ActionResult> CreateRecipe(
         [FromBody] CreateRecipeDto createRecipe,
+        [FromHeader] AcceptHeaderDto acceptHeader,
         [FromServices] IValidator<CreateRecipeDto> validator)
     {
         await validator.ValidateAndThrowAsync(createRecipe);
@@ -144,7 +153,10 @@ public sealed class RecipeController(
         await dbContext.SaveChangesAsync();
 
         RecipeDto recipeDto = recipe.ToDto();
-        recipeDto.Links = CreateLinksForRecipe(recipe.Id, null);
+        if (acceptHeader.IncludeLinks)
+        {
+            recipeDto.Links = CreateLinksForRecipe(recipe.Id, null);
+        }
 
         return CreatedAtAction(
             nameof(GetRecipe),

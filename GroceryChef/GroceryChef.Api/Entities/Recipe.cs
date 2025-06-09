@@ -68,7 +68,7 @@ public sealed class Recipe
                 RecipeId = Id,
                 IngredientId = uri.IngredientId,
                 Amount = uri.Amount,
-                Unit = uri.Unit,
+                Unit = uri.Unit ?? RecipeUnit.None,
                 CreateAtUtc = createdAtUtc
             }));
     }

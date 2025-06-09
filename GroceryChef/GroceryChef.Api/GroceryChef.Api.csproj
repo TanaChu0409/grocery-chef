@@ -30,4 +30,8 @@
     <PackageReference Include="Ulid" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\Applications\" />
+  </ItemGroup>
+
 </Project>

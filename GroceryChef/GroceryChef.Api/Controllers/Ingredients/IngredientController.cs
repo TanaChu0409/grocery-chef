@@ -18,6 +18,11 @@ namespace GroceryChef.Api.Controllers.Ingredients;
 [ApiController]
 [Route("ingredients")]
 [ApiVersion(1.0)]
+[Produces(
+    MediaTypeNames.Application.Json,
+    CustomMediaTypeNames.Application.JsonV1,
+    CustomMediaTypeNames.Application.HateoasJson,
+    CustomMediaTypeNames.Application.HateoasJsonV1)]
 public sealed class IngredientController(
     ApplicationDbContext dbContext,
     LinkService linkService,
@@ -25,7 +30,6 @@ public sealed class IngredientController(
     : ControllerBase
 {
     [HttpGet]
-    [Produces(MediaTypeNames.Application.Json, CustomMediaTypeNames.Application.HateoasJsonV1)]
     public async Task<IActionResult> GetIngredients(
         [FromQuery] IngredientQueryParameters query,
         SortMappingProvider sortMappingProvider,
@@ -70,19 +74,18 @@ public sealed class IngredientController(
             .Take(query.PageSize)
             .ToListAsync();
 
-        bool includeLinks = query.Accept == CustomMediaTypeNames.Application.HateoasJsonV1;
         var paginationResult = new PaginationResult<ExpandoObject>
         {
             Items = dataSharpingService.ShapeCollectionData(
                 ingredients,
                 query.Fields,
-                includeLinks ? i => CreateLinksForIngredient(i.Id, query.Fields) : null),
+                query.IncludeLinks ? i => CreateLinksForIngredient(i.Id, query.Fields) : null),
             Page = query.Page,
             PageSize = query.PageSize,
             TotalCount = totalCount
         };
 
-        if (includeLinks)
+        if (query.IncludeLinks)
         {
             paginationResult.Links = CreateLinksForIngredients(
                 query,
@@ -94,18 +97,16 @@ public sealed class IngredientController(
     }
 
     [HttpGet("{id}")]
-    [Produces(MediaTypeNames.Application.Json, CustomMediaTypeNames.Application.HateoasJsonV1)]
     public async Task<IActionResult> GetIngredient(
         string id,
-        string? fields,
-        [FromHeader(Name = "Accept")] string? accept,
+        [FromQuery] IngredientQueryParameters query,
         DataSharpingService dataSharpingService)
     {
-        if (!dataSharpingService.Validate<IngredientDto>(fields))
+        if (!dataSharpingService.Validate<IngredientDto>(query.Fields))
         {
             return Problem(
                 statusCode: StatusCodes.Status400BadRequest,
-                detail: $"The provided data shaping fields aren't valid: '{fields}'");
+                detail: $"The provided data shaping fields aren't valid: '{query.Fields}'");
         }
 
         IngredientDto? ingredient = await dbContext
@@ -119,13 +120,15 @@ public sealed class IngredientController(
             return NotFound();
         }
 
-        if (accept == CustomMediaTypeNames.Application.HateoasJsonV1)
+        if (query.IncludeLinks)
         {
-            List<LinkDto> links = CreateLinksForIngredient(id, fields);
+            List<LinkDto> links = CreateLinksForIngredient(id, query.Fields);
             ingredient.Links = links;
         }
 
-        ExpandoObject shapedIngredient = dataSharpingService.ShapeData(ingredient, fields);
+        ExpandoObject shapedIngredient = dataSharpingService.ShapeData(
+            ingredient,
+            query.Fields);
 
         return Ok(shapedIngredient);
     }
@@ -133,6 +136,7 @@ public sealed class IngredientController(
     [HttpPost]
     public async Task<ActionResult<IngredientDto>> CreateIngredient(
         [FromBody] CreateIngredientDto createIngredient,
+        [FromHeader] AcceptHeaderDto acceptHeader,
         [FromServices] IValidator<CreateIngredientDto> validator)
     {
         await validator.ValidateAndThrowAsync(createIngredient);
@@ -148,7 +152,10 @@ public sealed class IngredientController(
         await dbContext.SaveChangesAsync();
 
         IngredientDto ingredientDto = ingredient.ToDto();
-        ingredientDto.Links = CreateLinksForIngredient(ingredient.Id, null);
+        if (acceptHeader.IncludeLinks)
+        {
+            ingredientDto.Links = CreateLinksForIngredient(ingredient.Id, null);
+        }
 
         return CreatedAtAction(
             nameof(GetIngredient),

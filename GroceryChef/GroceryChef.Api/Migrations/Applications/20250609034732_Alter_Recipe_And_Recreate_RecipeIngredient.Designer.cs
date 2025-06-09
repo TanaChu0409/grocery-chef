@@ -3,17 +3,20 @@ using System;
 using GroceryChef.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace GroceryChef.Api.Migrations
+namespace GroceryChef.Api.Migrations.Applications
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250609034732_Alter_Recipe_And_Recreate_RecipeIngredient")]
+    partial class Alter_Recipe_And_Recreate_RecipeIngredient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -150,17 +153,17 @@ namespace GroceryChef.Api.Migrations
 
             modelBuilder.Entity("GroceryChef.Api.Entities.RecipeIngredient", b =>
                 {
-                    b.Property<string>("IngredientId")
-                        .HasColumnType("text")
-                        .HasColumnName("ingredient_id");
-
                     b.Property<string>("RecipeId")
                         .HasColumnType("text")
                         .HasColumnName("recipe_id");
 
+                    b.Property<string>("IngredientId")
+                        .HasColumnType("text")
+                        .HasColumnName("ingredient_id");
+
                     b.Property<decimal>("Amount")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("numeric(5,2)")
+                        .HasPrecision(4, 1)
+                        .HasColumnType("numeric(4,1)")
                         .HasColumnName("amount");
 
                     b.Property<DateTime>("CreateAtUtc")
@@ -171,11 +174,11 @@ namespace GroceryChef.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("unit");
 
-                    b.HasKey("IngredientId", "RecipeId")
+                    b.HasKey("RecipeId", "IngredientId")
                         .HasName("pk_recipe_ingredients");
 
-                    b.HasIndex("RecipeId")
-                        .HasDatabaseName("ix_recipe_ingredients_recipe_id");
+                    b.HasIndex("IngredientId")
+                        .HasDatabaseName("ix_recipe_ingredients_ingredient_id");
 
                     b.ToTable("recipe_ingredients", "grocerychef");
                 });
@@ -208,10 +211,10 @@ namespace GroceryChef.Api.Migrations
 
                     b.HasOne("GroceryChef.Api.Entities.Recipe", null)
                         .WithMany("RecipeIngredients")
-                        .HasForeignKey("RecipeId")
+                        .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_recipe_ingredients_recipes_recipe_id");
+                        .HasConstraintName("fk_recipe_ingredients_recipes_ingredient_id");
                 });
 
             modelBuilder.Entity("GroceryChef.Api.Entities.Recipe", b =>
