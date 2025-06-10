@@ -21,6 +21,7 @@ public sealed class Cart
     {
         return new Cart
         {
+            Id = $"c_{Ulid.NewUlid()}",
             Name = name,
             CreatedAtUtc = createdAtUtc
         };
