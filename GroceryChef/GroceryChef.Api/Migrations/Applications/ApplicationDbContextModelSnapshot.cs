@@ -3,7 +3,6 @@ using System;
 using GroceryChef.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,11 +11,9 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GroceryChef.Api.Migrations.Applications
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250609064006_Alter_All")]
-    partial class Alter_All
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,16 +30,24 @@ namespace GroceryChef.Api.Migrations.Applications
                         .HasColumnType("character varying(500)")
                         .HasColumnName("id");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("name");
 
-                    b.HasKey("Id")
-                        .HasName("pk_cart");
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
 
-                    b.ToTable("cart", "grocerychef");
+                    b.HasKey("Id")
+                        .HasName("pk_carts");
+
+                    b.ToTable("carts", "grocerychef");
                 });
 
             modelBuilder.Entity("GroceryChef.Api.Entities.CartIngredient", b =>
@@ -52,15 +57,10 @@ namespace GroceryChef.Api.Migrations.Applications
                         .HasColumnType("character varying(500)")
                         .HasColumnName("cart_id");
 
-                    b.Property<string>("IngredientsId")
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("ingredients_id");
-
-                    b.Property<string>("IngrdientId")
-                        .IsRequired()
+                    b.Property<string>("IngredientId")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("ingrdient_id");
+                        .HasColumnName("ingredient_id");
 
                     b.Property<bool>("IsBought")
                         .HasColumnType("boolean")
@@ -70,13 +70,13 @@ namespace GroceryChef.Api.Migrations.Applications
                         .HasColumnType("integer")
                         .HasColumnName("quantity");
 
-                    b.HasKey("CartId", "IngredientsId")
-                        .HasName("pk_cart_ingredient");
+                    b.HasKey("CartId", "IngredientId")
+                        .HasName("pk_cart_ingredients");
 
-                    b.HasIndex("IngredientsId")
-                        .HasDatabaseName("ix_cart_ingredient_ingredients_id");
+                    b.HasIndex("IngredientId")
+                        .HasDatabaseName("ix_cart_ingredients_ingredient_id");
 
-                    b.ToTable("cart_ingredient", "grocerychef");
+                    b.ToTable("cart_ingredients", "grocerychef");
                 });
 
             modelBuilder.Entity("GroceryChef.Api.Entities.Ingredient", b =>
@@ -197,14 +197,14 @@ namespace GroceryChef.Api.Migrations.Applications
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_cart_ingredient_cart_cart_id");
+                        .HasConstraintName("fk_cart_ingredients_carts_cart_id");
 
                     b.HasOne("GroceryChef.Api.Entities.Ingredient", null)
                         .WithMany()
-                        .HasForeignKey("IngredientsId")
+                        .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_cart_ingredient_ingredients_ingredients_id");
+                        .HasConstraintName("fk_cart_ingredients_ingredients_ingredient_id");
                 });
 
             modelBuilder.Entity("GroceryChef.Api.Entities.RecipeIngredient", b =>

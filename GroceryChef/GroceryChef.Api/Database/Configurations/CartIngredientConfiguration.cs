@@ -9,6 +9,6 @@ internal sealed class CartIngredientConfiguration : IEntityTypeConfiguration<Car
     public void Configure(EntityTypeBuilder<CartIngredient> builder)
     {
         builder.Property(ci => ci.CartId).HasMaxLength(500);
-        builder.Property(ci => ci.IngrdientId).HasMaxLength(500);
+        builder.Property(ci => ci.IngredientId).HasMaxLength(500);
     }
 }

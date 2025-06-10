@@ -263,6 +263,12 @@ public sealed class CartController(
             linkService.Create(nameof(GetCart), "self", HttpMethods.Get, new { id, fields }),
             linkService.Create(nameof(UpdateCart), "update", HttpMethods.Put, new { id }),
             linkService.Create(nameof(DeleteCart), "delete", HttpMethods.Delete, new { id }),
+            linkService.Create(
+                nameof(CartIngredientController.UpsertCartIngredients),
+                "upsert-ingredients",
+                HttpMethods.Put,
+                new { cartId = id },
+                CartIngredientController.Name),
         ];
     }
 }

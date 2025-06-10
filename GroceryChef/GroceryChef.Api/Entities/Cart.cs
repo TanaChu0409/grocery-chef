@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using GroceryChef.Api.DTOs.Carts;
+using GroceryChef.Api.DTOs.CartsIngredients;
 using GroceryChef.Api.Services.Sorting;
 
 namespace GroceryChef.Api.Entities;
@@ -31,6 +32,25 @@ public sealed class Cart
     {
         Name = updateCart.Name;
         UpdatedAtUtc = updatedAtUtc;
+    }
+
+    public void RemoveAllCartIngredients(List<string> upsertCartIngredientIds)
+    {
+        _cartIngredients.RemoveAll(ci => !upsertCartIngredientIds.Contains(ci.IngredientId));
+    }
+
+    public void AddCartIngredients(List<UpsertCartIngredientsDetailDto> upsertCartIngredientDetails)
+    {
+        _cartIngredients.AddRange(
+            upsertCartIngredientDetails
+            .Select(uci =>
+            new CartIngredient
+            {
+                CartId = Id,
+                IngredientId = uci.IngredientId,
+                Quantity = uci.Quantity,
+                IsBought = false
+            }));
     }
 
     public static Expression<Func<Cart, CartDto>> ProjectToDto() =>
