@@ -103,9 +103,12 @@ public sealed class CartController(
                 detail: $"The provided data shaping fields aren't valid: '{query.Fields}'");
         }
 
-        Cart? cart = await dbContext
+        CartWithIngredientsDto? cart = await dbContext
             .Carts
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .Include(c => c.Ingredients)
+            .Where(c => c.Id == id)
+            .Select(Cart.ProjectToDtoWithIngredients())
+            .FirstOrDefaultAsync();
 
         if (cart is null)
         {

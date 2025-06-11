@@ -9,15 +9,18 @@ public sealed class Cart
 {
     private readonly List<Ingredient> _ingredients = [];
     private readonly List<CartIngredient> _cartIngredients = [];
+
     private Cart()
     {
     }
+
     public string Id { get; private set; }
     public string Name { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
     public IReadOnlyCollection<Ingredient> Ingredients => _ingredients;
     public IReadOnlyCollection<CartIngredient> CartIngredients => _cartIngredients;
+
     public static Cart Create(string name, DateTime createdAtUtc)
     {
         return new Cart
@@ -56,6 +59,9 @@ public sealed class Cart
     public static Expression<Func<Cart, CartDto>> ProjectToDto() =>
         c => c.ToDto();
 
+    public static Expression<Func<Cart, CartWithIngredientsDto>> ProjectToDtoWithIngredients() =>
+        c => c.ToDtoWithIngredients();
+
     public CartDto ToDto() =>
         new()
         {
@@ -64,6 +70,20 @@ public sealed class Cart
             CreatedAtUtc = CreatedAtUtc,
             UpdatedAtUtc = UpdatedAtUtc,
         };
+
+    public CartWithIngredientsDto ToDtoWithIngredients() =>
+        new()
+        {
+            Id = Id,
+            Name = Name,
+            CreatedAtUtc = CreatedAtUtc,
+            UpdatedAtUtc = UpdatedAtUtc,
+            Ingredients = _cartIngredients
+                .ToDictionary(ci => GetIngredientName(ci.IngredientId), ci => ci.IsBought)
+        };
+
+    private string GetIngredientName(string ingredientId) =>
+        _ingredients.FirstOrDefault(i => i.Id == ingredientId)?.Name ?? string.Empty;
 
     public static readonly SortMappingDefinition<CartDto, Cart> SortMapping = new()
     {
