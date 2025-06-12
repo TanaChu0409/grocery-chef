@@ -9,6 +9,7 @@ using GroceryChef.Api.Entities;
 using GroceryChef.Api.Middleware;
 using GroceryChef.Api.Services;
 using GroceryChef.Api.Services.Sorting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
@@ -95,6 +96,14 @@ public static class DependencyInjection
                         .MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Application))
                 .UseSnakeCaseNamingConvention());
 
+        builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
+             options
+                .UseNpgsql(
+                    builder.Configuration.GetConnectionString("Database"),
+                    npgsqlOptions => npgsqlOptions
+                        .MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Identity))
+                .UseSnakeCaseNamingConvention());
+
         return builder;
     }
 
@@ -139,6 +148,14 @@ public static class DependencyInjection
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddTransient<LinkService>();
         builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddAuthenticationService(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
 
         return builder;
     }

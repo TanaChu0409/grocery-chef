@@ -79,7 +79,14 @@ public sealed class Cart
             CreatedAtUtc = CreatedAtUtc,
             UpdatedAtUtc = UpdatedAtUtc,
             Ingredients = _cartIngredients
-                .ToDictionary(ci => GetIngredientName(ci.IngredientId), ci => ci.IsBought)
+                .Select(ci =>
+                    new CartIngredientsDetailDto
+                    {
+                        IngredientId = ci.IngredientId,
+                        Name = GetIngredientName(ci.IngredientId),
+                        IsBought = ci.IsBought
+                    })
+                .ToList()
         };
 
     private string GetIngredientName(string ingredientId) =>
