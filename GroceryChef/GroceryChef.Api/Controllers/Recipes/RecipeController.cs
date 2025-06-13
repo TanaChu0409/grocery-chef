@@ -28,7 +28,8 @@ namespace GroceryChef.Api.Controllers.Recipes;
 public sealed class RecipeController(
     ApplicationDbContext dbContext,
     LinkService linkService,
-    IDateTimeProvider dateTimeProvider) : ControllerBase
+    IDateTimeProvider dateTimeProvider,
+    UserContext userContext) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetRecipes(
@@ -36,6 +37,12 @@ public sealed class RecipeController(
         SortMappingProvider sortMappingProvider,
         DataSharpingService dataSharpingService)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         if (!sortMappingProvider.ValidateMappings<RecipeDto, Recipe>(query.Sort))
         {
             return Problem(
@@ -56,6 +63,7 @@ public sealed class RecipeController(
 
         IQueryable<RecipeDto> recipeQuery = dbContext
             .Recipes
+            .Where(r => r.UserId == userId)
             .Where(r =>
                 query.Search == null ||
                 r.Name.ToLower().Contains(query.Search) ||
@@ -99,6 +107,12 @@ public sealed class RecipeController(
         RecipeQueryParameters query,
         DataSharpingService dataSharpingService)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         if (!dataSharpingService.Validate<RecipeDto>(query.Fields))
         {
             return Problem(
@@ -109,7 +123,7 @@ public sealed class RecipeController(
         RecipeWithIngredientsDto? recipe = await dbContext
             .Recipes
             .Include(r => r.Ingredients)
-            .Where(r => r.Id == id)
+            .Where(r => r.Id == id && r.UserId == userId)
             .Select(Recipe.ProjectToDtoWithIngredients())
             .FirstOrDefaultAsync();
 
@@ -142,12 +156,19 @@ public sealed class RecipeController(
         [FromHeader] AcceptHeaderDto acceptHeader,
         [FromServices] IValidator<CreateRecipeDto> validator)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         await validator.ValidateAndThrowAsync(createRecipe);
 
         var recipe = Recipe.Create(
             createRecipe.Name,
             createRecipe.Description,
             createRecipe.Content,
+            userId,
             dateTimeProvider.UtcNow);
 
         dbContext.Recipes.Add(recipe);
@@ -171,9 +192,15 @@ public sealed class RecipeController(
         string id,
         [FromBody] UpdateRecipeDto updateRecipe)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         Recipe? recipe = await dbContext
             .Recipes
-            .FirstOrDefaultAsync(r => r.Id == id);
+            .FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId);
 
         if (recipe is null)
         {
@@ -192,9 +219,15 @@ public sealed class RecipeController(
         string id,
         JsonPatchDocument<RecipeDto> patchDocument)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         Recipe? recipe = await dbContext
             .Recipes
-            .FirstOrDefaultAsync(r => r.Id == id);
+            .FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId);
 
         if (recipe is null)
         {
@@ -226,9 +259,15 @@ public sealed class RecipeController(
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRecipe(string id)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         Recipe? recipe = await dbContext
             .Recipes
-            .FirstOrDefaultAsync(r => r.Id == id);
+            .FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId);
 
         if (recipe is null)
         {

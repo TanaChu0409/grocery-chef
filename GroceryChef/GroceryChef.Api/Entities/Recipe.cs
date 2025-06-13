@@ -16,6 +16,7 @@ public sealed class Recipe
     }
 
     public string Id { get; private set; }
+    public string UserId { get; private set; }
     public string Name { get; private set; }
     public string? Description { get; private set; }
     public string Content { get; private set; }
@@ -29,6 +30,7 @@ public sealed class Recipe
         string name,
         string? descriptions,
         string content,
+        string userId,
         DateTime createAtUtc)
     {
         return new Recipe
@@ -38,7 +40,8 @@ public sealed class Recipe
             Content = content,
             Description = descriptions,
             CreatedAtUtc = createAtUtc,
-            IsArchived = false
+            IsArchived = false,
+            UserId = userId
         };
     }
 

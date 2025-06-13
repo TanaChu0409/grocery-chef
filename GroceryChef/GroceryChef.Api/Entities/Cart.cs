@@ -15,21 +15,24 @@ public sealed class Cart
     }
 
     public string Id { get; private set; }
+    public string UserId { get; private set; }
     public string Name { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
     public IReadOnlyCollection<Ingredient> Ingredients => _ingredients;
     public IReadOnlyCollection<CartIngredient> CartIngredients => _cartIngredients;
 
-    public static Cart Create(string name, DateTime createdAtUtc)
-    {
-        return new Cart
+    public static Cart Create(
+        string name, 
+        string userId,
+        DateTime createdAtUtc) => 
+        new()
         {
             Id = $"c_{Ulid.NewUlid()}",
             Name = name,
+            UserId = userId,
             CreatedAtUtc = createdAtUtc
         };
-    }
 
     public void UpdateFromDto(UpdateCartDto updateCart, DateTime updatedAtUtc)
     {

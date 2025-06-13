@@ -28,7 +28,8 @@ namespace GroceryChef.Api.Controllers.Ingredients;
 public sealed class IngredientController(
     ApplicationDbContext dbContext,
     LinkService linkService,
-    IDateTimeProvider dateTimeProvider)
+    IDateTimeProvider dateTimeProvider,
+    UserContext userContext)
     : ControllerBase
 {
     [HttpGet]
@@ -37,6 +38,12 @@ public sealed class IngredientController(
         SortMappingProvider sortMappingProvider,
         DataSharpingService dataSharpingService)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         if (!sortMappingProvider.ValidateMappings<IngredientDto, Ingredient>(query.Sort))
         {
             return Problem(
@@ -57,6 +64,7 @@ public sealed class IngredientController(
 
         IQueryable<IngredientDto> ingredientQuery = dbContext
             .Ingredients
+            .Where(i => i.UserId == userId)
             .Where(i =>
                 query.Search == null ||
                 i.Name.ToLower().Contains(query.Search))
@@ -104,6 +112,12 @@ public sealed class IngredientController(
         [FromQuery] IngredientQueryParameters query,
         DataSharpingService dataSharpingService)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         if (!dataSharpingService.Validate<IngredientDto>(query.Fields))
         {
             return Problem(
@@ -113,7 +127,7 @@ public sealed class IngredientController(
 
         IngredientDto? ingredient = await dbContext
             .Ingredients
-            .Where(i => i.Id == id)
+            .Where(i => i.Id == id && i.UserId == userId)
             .Select(Ingredient.ProjectToDto())
             .FirstOrDefaultAsync();
 
@@ -141,12 +155,19 @@ public sealed class IngredientController(
         [FromHeader] AcceptHeaderDto acceptHeader,
         [FromServices] IValidator<CreateIngredientDto> validator)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         await validator.ValidateAndThrowAsync(createIngredient);
 
         var ingredient = Ingredient.Create(
             createIngredient.Name,
             createIngredient.ShelfLifeOfDate,
             createIngredient.IsAllergy,
+            userId,
             dateTimeProvider.UtcNow);
 
         dbContext.Ingredients.Add(ingredient);
@@ -170,9 +191,15 @@ public sealed class IngredientController(
         string id,
         [FromBody] UpdateIngredientDto updateIngredient)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         Ingredient? ingredient = await dbContext
             .Ingredients
-            .FirstOrDefaultAsync(i => i.Id == id);
+            .FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
 
         if (ingredient is null)
         {
@@ -191,9 +218,15 @@ public sealed class IngredientController(
         string id,
         JsonPatchDocument<IngredientDto> patchDocument)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         Ingredient? ingredient = await dbContext
             .Ingredients
-            .FirstOrDefaultAsync(i => i.Id == id);
+            .FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
 
         if (ingredient is null)
         {
@@ -225,9 +258,15 @@ public sealed class IngredientController(
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteIngredient(string id)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         Ingredient? ingredient = await dbContext
             .Ingredients
-            .FirstOrDefaultAsync(i => i.Id == id);
+            .FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
 
         if (ingredient is null)
         {

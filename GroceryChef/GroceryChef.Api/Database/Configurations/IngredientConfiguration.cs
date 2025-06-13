@@ -11,7 +11,12 @@ internal sealed class IngredientConfiguration : IEntityTypeConfiguration<Ingredi
         builder.HasKey(i => i.Id);
 
         builder.Property(i => i.Id).HasMaxLength(500);
+        builder.Property(i => i.UserId).HasMaxLength(500);
 
         builder.Property(i => i.Name).HasMaxLength(500);
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(i => i.UserId);
     }
 }

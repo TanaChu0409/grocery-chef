@@ -11,6 +11,7 @@ public sealed class Ingredient
     }
 
     public string Id { get; private set; }
+    public string UserId { get; private set; }
     public string Name { get; private set; }
     public int ShelfLifeOfDate { get; private set; }
     public bool IsAllergy { get; private set; }
@@ -21,6 +22,7 @@ public sealed class Ingredient
         string name,
         int shelfLifeOfDate,
         bool isAllergy,
+        string userId,
         DateTime createAtUtc)
     {
         return new Ingredient
@@ -29,6 +31,7 @@ public sealed class Ingredient
             Name = name,
             ShelfLifeOfDate = shelfLifeOfDate,
             IsAllergy = isAllergy,
+            UserId = userId,
             CreateAtUtc = createAtUtc,
         };
     }

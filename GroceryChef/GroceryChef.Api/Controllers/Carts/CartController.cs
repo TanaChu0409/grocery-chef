@@ -28,7 +28,8 @@ namespace GroceryChef.Api.Controllers.Carts;
 [Authorize]
 public sealed class CartController(
     ApplicationDbContext dbContext,
-    LinkService linkService) : ControllerBase
+    LinkService linkService,
+    UserContext userContext) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetCarts(
@@ -36,6 +37,12 @@ public sealed class CartController(
         SortMappingProvider sortMappingProvider,
         DataSharpingService dataSharpingService)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         if (!sortMappingProvider.ValidateMappings<CartDto, Cart>(query.Sort))
         {
             return Problem(
@@ -56,6 +63,7 @@ public sealed class CartController(
 
         IQueryable<CartDto> cartQuery = dbContext
             .Carts
+            .Where(c => c.UserId == userId)
             .Where(c =>
                 query.Search == null ||
                 c.Name.ToLower().Contains(query.Search))
@@ -97,6 +105,12 @@ public sealed class CartController(
         [FromQuery] CartQueryParameters query,
         DataSharpingService dataSharpingService)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         if (!dataSharpingService.Validate<CartDto>(query.Fields))
         {
             return Problem(
@@ -107,7 +121,7 @@ public sealed class CartController(
         CartWithIngredientsDto? cart = await dbContext
             .Carts
             .Include(c => c.Ingredients)
-            .Where(c => c.Id == id)
+            .Where(c => c.Id == id && c.UserId == userId)
             .Select(Cart.ProjectToDtoWithIngredients())
             .FirstOrDefaultAsync();
 
@@ -136,10 +150,17 @@ public sealed class CartController(
         [FromServices] IValidator<CreateCartDto> validator,
         [FromServices] IDateTimeProvider dateTimeProvider)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         await validator.ValidateAndThrowAsync(createCart);
 
         var cart = Cart.Create(
             createCart.Name,
+            userId,
             dateTimeProvider.UtcNow);
 
         dbContext.Carts.Add(cart);
@@ -164,16 +185,25 @@ public sealed class CartController(
         [FromBody] UpdateCartDto updateCart,
         [FromServices] IDateTimeProvider dateTimeProvider)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         Cart? cart = await dbContext
             .Carts
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
 
         if (cart is null)
         {
             return NotFound();
         }
 
-        if (await dbContext.Carts.AnyAsync(c => c.Name == updateCart.Name && c.Id != id))
+        if (await dbContext.Carts.AnyAsync(c => 
+            c.Name == updateCart.Name && 
+            c.Id != id &&
+            c.UserId == userId))
         {
             return Problem(
                 statusCode: StatusCodes.Status400BadRequest,
@@ -190,9 +220,15 @@ public sealed class CartController(
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCart(string id)
     {
+        string? userId = await userContext.GetUserIdAsync();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
         Cart? cart = await dbContext
             .Carts
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
 
         if (cart is null)
         {
