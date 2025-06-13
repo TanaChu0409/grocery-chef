@@ -13,7 +13,7 @@ using System.Dynamic;
 using GroceryChef.Api.Controllers.Recipes;
 using GroceryChef.Api.DTOs.Recipes;
 using FluentValidation;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GroceryChef.Api.Controllers.Carts;
 
@@ -25,6 +25,7 @@ namespace GroceryChef.Api.Controllers.Carts;
     CustomMediaTypeNames.Application.JsonV1,
     CustomMediaTypeNames.Application.HateoasJson,
     CustomMediaTypeNames.Application.HateoasJsonV1)]
+[Authorize]
 public sealed class CartController(
     ApplicationDbContext dbContext,
     LinkService linkService) : ControllerBase

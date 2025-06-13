@@ -6,6 +6,7 @@ using GroceryChef.Api.Database;
 using GroceryChef.Api.DTOs.Users;
 using GroceryChef.Api.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GroceryChef.Api.Controllers.Users;
 
@@ -17,6 +18,7 @@ namespace GroceryChef.Api.Controllers.Users;
     CustomMediaTypeNames.Application.JsonV1,
     CustomMediaTypeNames.Application.HateoasJson,
     CustomMediaTypeNames.Application.HateoasJsonV1)]
+[Authorize]
 public sealed class UsersController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpGet("{id}")]

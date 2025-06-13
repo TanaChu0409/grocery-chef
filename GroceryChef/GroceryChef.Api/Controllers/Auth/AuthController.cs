@@ -2,6 +2,7 @@
 using GroceryChef.Api.Database;
 using GroceryChef.Api.DTOs.Auth;
 using GroceryChef.Api.DTOs.Users;
+using GroceryChef.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,11 @@ public sealed class AuthController(
     UserManager<IdentityUser> userManager,
     ApplicationIdentityDbContext identityDbContext,
     ApplicationDbContext applicationDbContext,
+    TokenProvider tokenProvider,
     ILogger<AuthController> logger) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<IActionResult> Register(
+    public async Task<ActionResult<AccessTokensDto>> Register(
         [FromBody] RegisterUserDto registerUserDto,
         [FromServices] IDateTimeProvider dateTimeProvider)
     {
@@ -62,6 +64,25 @@ public sealed class AuthController(
 
         await transaction.CommitAsync();
 
-        return Ok(user.Id);
+        var tokenRequest = new TokenRequest(identityUser.Id, identityUser.Email);
+        AccessTokensDto accessToken = tokenProvider.Create(tokenRequest);
+
+        return Ok(accessToken);
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<AccessTokensDto>> Login(LoginUserDto loginUserDto)
+    {
+        IdentityUser? identityUser = await userManager.FindByEmailAsync(loginUserDto.Email);
+
+        if (identityUser is null || !await userManager.CheckPasswordAsync(identityUser, loginUserDto.Password))
+        {
+            return Unauthorized();
+        }
+
+        var tokenRequest = new TokenRequest(identityUser.Id, identityUser.Email!);
+        AccessTokensDto accessTokens = tokenProvider.Create(tokenRequest);
+
+        return Ok(accessTokens);
     }
 }

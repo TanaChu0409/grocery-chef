@@ -9,6 +9,7 @@ using GroceryChef.Api.DTOs.Ingredients;
 using GroceryChef.Api.Entities;
 using GroceryChef.Api.Services;
 using GroceryChef.Api.Services.Sorting;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace GroceryChef.Api.Controllers.Ingredients;
     CustomMediaTypeNames.Application.JsonV1,
     CustomMediaTypeNames.Application.HateoasJson,
     CustomMediaTypeNames.Application.HateoasJsonV1)]
+[Authorize]
 public sealed class IngredientController(
     ApplicationDbContext dbContext,
     LinkService linkService,

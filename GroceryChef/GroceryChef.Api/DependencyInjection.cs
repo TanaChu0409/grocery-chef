@@ -1,4 +1,5 @@
-﻿using Asp.Versioning;
+﻿using System.Text;
+using Asp.Versioning;
 using FluentValidation;
 using GroceryChef.Api.Clock;
 using GroceryChef.Api.Database;
@@ -9,11 +10,14 @@ using GroceryChef.Api.Entities;
 using GroceryChef.Api.Middleware;
 using GroceryChef.Api.Services;
 using GroceryChef.Api.Services.Sorting;
+using GroceryChef.Api.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using Npgsql;
@@ -97,7 +101,7 @@ public static class DependencyInjection
                 .UseSnakeCaseNamingConvention());
 
         builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
-             options
+            options
                 .UseNpgsql(
                     builder.Configuration.GetConnectionString("Database"),
                     npgsqlOptions => npgsqlOptions
@@ -149,6 +153,8 @@ public static class DependencyInjection
         builder.Services.AddTransient<LinkService>();
         builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
+        builder.Services.AddTransient<TokenProvider>();
+
         return builder;
     }
 
@@ -156,6 +162,28 @@ public static class DependencyInjection
     {
         builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+
+        builder.Services.Configure<JwtAuthOptions>(builder.Configuration.GetSection("Jwt"));
+
+        JwtAuthOptions? jwtAuthOptions = builder.Configuration.GetSection("Jwt").Get<JwtAuthOptions>();
+
+        builder.Services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = jwtAuthOptions!.Issuer,
+                    ValidAudience = jwtAuthOptions!.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtAuthOptions!.Key))
+                };
+            });
+
+        builder.Services.AddAuthorization();
 
         return builder;
     }

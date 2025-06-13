@@ -1,6 +1,7 @@
 ﻿using GroceryChef.Api.Database;
 using GroceryChef.Api.DTOs.CartsIngredients;
 using GroceryChef.Api.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace GroceryChef.Api.Controllers.Carts;
 
 [ApiController]
 [Route("carts/{cartId}/ingredients")]
+[Authorize]
 public sealed class CartIngredientController(ApplicationDbContext dbContext) : ControllerBase
 {
     public static readonly string Name = nameof(CartIngredientController)
