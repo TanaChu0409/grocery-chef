@@ -7,9 +7,11 @@ using GroceryChef.Api.DTOs.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using GroceryChef.Api.Entities;
 
 namespace GroceryChef.Api.Controllers.Users;
 
+[Authorize(Roles = Roles.Member)]
 [ApiController]
 [Route("users")]
 [ApiVersion(1.0)]
@@ -18,12 +20,12 @@ namespace GroceryChef.Api.Controllers.Users;
     CustomMediaTypeNames.Application.JsonV1,
     CustomMediaTypeNames.Application.HateoasJson,
     CustomMediaTypeNames.Application.HateoasJsonV1)]
-[Authorize]
 public sealed class UsersController(
     ApplicationDbContext dbContext,
     UserContext userContext) : ControllerBase
 {
     [HttpGet("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult<UserDto>> GetUserById(string id)
     {
         string? userId = await userContext.GetUserIdAsync();

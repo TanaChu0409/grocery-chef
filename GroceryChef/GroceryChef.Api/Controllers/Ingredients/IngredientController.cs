@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GroceryChef.Api.Controllers.Ingredients;
 
+[Authorize(Roles = Roles.Member)]
 [ApiController]
 [Route("ingredients")]
 [ApiVersion(1.0)]
@@ -24,7 +25,6 @@ namespace GroceryChef.Api.Controllers.Ingredients;
     CustomMediaTypeNames.Application.JsonV1,
     CustomMediaTypeNames.Application.HateoasJson,
     CustomMediaTypeNames.Application.HateoasJsonV1)]
-[Authorize]
 public sealed class IngredientController(
     ApplicationDbContext dbContext,
     LinkService linkService,

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace GroceryChef.Api.Controllers.Carts;
 
+[Authorize(Roles = Roles.Member)]
 [ApiController]
 [Route("carts")]
 [ApiVersion(1.0)]
@@ -25,7 +26,6 @@ namespace GroceryChef.Api.Controllers.Carts;
     CustomMediaTypeNames.Application.JsonV1,
     CustomMediaTypeNames.Application.HateoasJson,
     CustomMediaTypeNames.Application.HateoasJsonV1)]
-[Authorize]
 public sealed class CartController(
     ApplicationDbContext dbContext,
     LinkService linkService,

@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GroceryChef.Api.Controllers.Carts;
 
+[Authorize(Roles = Roles.Member)]
 [ApiController]
 [Route("carts/{cartId}/ingredients")]
-[Authorize]
 public sealed class CartIngredientController(ApplicationDbContext dbContext) : ControllerBase
 {
     public static readonly string Name = nameof(CartIngredientController)
