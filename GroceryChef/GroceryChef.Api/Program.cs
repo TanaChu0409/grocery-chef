@@ -1,5 +1,6 @@
 using GroceryChef.Api;
 using GroceryChef.Api.Extensions;
+using GroceryChef.Api.Middleware;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.AddApiService()
@@ -27,6 +28,8 @@ app.UseExceptionHandler();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<ETagMiddleware>();
 
 app.MapControllers();
 

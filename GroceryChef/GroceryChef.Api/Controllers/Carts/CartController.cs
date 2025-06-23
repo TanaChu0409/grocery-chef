@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace GroceryChef.Api.Controllers.Carts;
 
+[ResponseCache(Duration = 120)]
 [Authorize(Roles = Roles.Member)]
 [ApiController]
 [Route("carts")]

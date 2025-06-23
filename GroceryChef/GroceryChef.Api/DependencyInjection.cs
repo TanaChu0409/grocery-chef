@@ -78,6 +78,8 @@ public static class DependencyInjection
             options.CustomSchemaIds(t => t.FullName?.Replace("+", "."));
         });
 
+        builder.Services.AddResponseCaching();
+
         return builder;
     }
 
@@ -157,6 +159,8 @@ public static class DependencyInjection
 
         builder.Services.AddMemoryCache();
         builder.Services.AddScoped<UserContext>();
+
+        builder.Services.AddSingleton<InMemoryETagStore>();
 
         return builder;
     }
