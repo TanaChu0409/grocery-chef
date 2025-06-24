@@ -8,8 +8,8 @@ services:
       context: .
       dockerfile: GroceryChef.Api/Dockerfile
     ports:
-      - 5000:8080
-      - 5001:8081
+      - 9000:8080
+      - 9001:8081
     depends_on:
       - grocerychef.database
     environment:

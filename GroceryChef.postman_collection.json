@@ -1,0 +1,1027 @@
+{
+	"info": {
+		"_postman_id": "fac3399e-5673-4395-8f65-19fe6097138f",
+		"name": "GroceryChef",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44278846",
+		"_collection_link": "https://galactic-station-6071759.postman.co/workspace/1bc8e8a2-2fcb-4efa-87e7-45c53f1457d0/collection/44278846-fac3399e-5673-4395-8f65-19fe6097138f?action=share&source=collection_link&creator=44278846"
+	},
+	"item": [
+		{
+			"name": "Ingredients",
+			"item": [
+				{
+					"name": "GetIngredients",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9001/ingredients?page=1&pageSize=10",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"ingredients"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "洋蔥",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "name,frequency.type desc",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "fields",
+									"value": "name,createdAtUtc",
+									"disabled": true
+								},
+								{
+									"key": "isAllergy",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetIngredient",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							},
+							{
+								"key": "If-None-Match",
+								"value": "\"EEF2AC64774FACEDC11ACE593FB2CA6F24B37D470970951F5212CB7BA713A80BD5D160F2530E4C7A0638FA214124857564581A9EEF910B6F0066F9741755D912\"",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9001/ingredients/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"ingredients",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "I_01JXKZWRZ3NBWVSE93FFW15008"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateIngredient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"青菜\",\r\n    \"shelfLifeOfDate\": 5,\r\n    \"isAllergy\": false\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/ingredients",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"ingredients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateIngredient",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Tomato\",\r\n    \"shelfLifeOfDate\": 3,\r\n    \"isAllergy\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/ingredients/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"ingredients",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "I_01JWX20EZT32GRXZ6WF0PB9E5N"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PartiallyUpdateIngredient",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n  {\r\n    \"op\": \"replace\",\r\n    \"path\": \"/name\",\r\n    \"value\": \"番茄\"\r\n  }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/ingredients/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"ingredients",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "I_01JWX20EZT32GRXZ6WF0PB9E5N"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteIngredient",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9001/ingredients/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"ingredients",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "I_01JWX20EZT32GRXZ6WF0PB9E5N"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Recipes",
+			"item": [
+				{
+					"name": "GetRecipes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9001/recipes",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "蛋",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "name,createdAtUtc desc",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "pageSize",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "fields",
+									"value": "name,content",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetRecipe",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9001/recipes/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "R_01JXKZXG8QHP4ENVV7C9HJHR6R"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateRecipe",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"蒜蓉炒青菜\",\r\n    \"content\": \"1. 青菜洗淨切段。2. 熱鍋加油爆香蒜末。3. 加入青菜快炒至熟。\",\r\n    \"description\": \"健康又簡單的家常炒青菜。\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/recipes",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateRecipe",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"香蒜奶油炒蛋\",\r\n    \"content\": \"準備材料：將雞蛋打入碗中，加入牛奶、鹽與黑胡椒，攪拌均勻。\\n加熱鍋具：在平底鍋中放入奶油，小火加熱至融化。\\n爆香蒜末：加入蒜末，小火炒香（約 30 秒），注意不要炒焦。\\n倒入蛋液：將蛋液倒入鍋中，靜置幾秒後，用木匙或矽膠刮刀輕輕攪拌。\\n炒至半熟：持續以小火翻炒，直到蛋液呈現濕潤狀態即可關火。\\n裝盤與裝飾：將炒蛋盛盤，可撒上香蔥末增添風味。\",\r\n    \"description\": \"這是一道簡單又美味的早餐料理，結合了香蒜與奶油的濃郁風味，滑嫩的炒蛋讓人一口接一口。\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/recipes/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "R_01JX1D3AGZMT94CNABGHR6T78X"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PartiallyUpdateRecipe",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n  {\r\n    \"op\": \"replace\",\r\n    \"path\": \"/content\",\r\n    \"value\": \"準備材料：將雞蛋打入碗中，加入牛奶、鹽與黑胡椒，攪拌均勻。加熱鍋具：在平底鍋中放入奶油，小火加熱至融化。爆香蒜末：加入蒜末，小火炒香（約 30 秒），注意不要炒焦。倒入蛋液：將蛋液倒入鍋中，靜置幾秒後，用木匙或矽膠刮刀輕輕攪拌。炒至半熟：持續以小火翻炒，直到蛋液呈現濕潤狀態即可關火。裝盤與裝飾：將炒蛋盛盤，可撒上香蔥末增添風味。\"\r\n  }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/recipes/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "R_01JX1D3AGZMT94CNABGHR6T78X"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteRecipe",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9001/recipes/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "R_01JX1DDAEE10W1CQTQ7S0KQVQH"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetRecipeUnit",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9001/recipes/units",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes",
+								"units"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "RecipeIngredients",
+			"item": [
+				{
+					"name": "UpsertRecipeIngredients",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"details\": [\r\n        {\r\n            \"ingredientId\": \"I_01JXKZWRZ3NBWVSE93FFW15008\",\r\n            \"amount\": 1,\r\n            \"unit\": 0\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/recipes/:id/ingredients",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes",
+								":id",
+								"ingredients"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "R_01JXKZXG8QHP4ENVV7C9HJHR6R"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Carts",
+			"item": [
+				{
+					"name": "GetCarts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9001/carts",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"carts"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "蛋",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "name,createdAtUtc desc",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "pageSize",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "fields",
+									"value": "name,content",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetCart",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9001/carts/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"carts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "c_01JXCDNE9CV4KFR2G0EQDN2HVA"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateCart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Test111\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/carts",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"carts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateCart",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"購買清單一\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/carts/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"carts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "c_01JXCDNE9CV4KFR2G0EQDN2HVA"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteCart",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9001/carts/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"carts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "c_01JXBQ75T0QQRJNW4GE4J8KBWT"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CartIngredients",
+			"item": [
+				{
+					"name": "UpsertCartIngredients",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"details\": [\r\n        {\r\n            \"ingredientId\": \"I_01JXCEWXEFDSQR5Q5WWF5X5DF4\",\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"ingredientId\": \"I_01JXCF69EV54BYHVNP8YE1FWD8\",\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"ingredientId\": \"I_01JXCDN9M3WVWP75KNWW8JFS9X\",\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/carts/:cartId/ingredients",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"carts",
+								":cartId",
+								"ingredients"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "c_01JXCDNE9CV4KFR2G0EQDN2HVA"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SetBoughtForIngredient",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.grocerychef.hateoas.1+json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9001/carts/:cartId/ingredients/:ingredientId/bought",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"carts",
+								":cartId",
+								"ingredients",
+								":ingredientId",
+								"bought"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "c_01JXCDNE9CV4KFR2G0EQDN2HVA"
+								},
+								{
+									"key": "ingredientId",
+									"value": "I_01JXCEWXEFDSQR5Q5WWF5X5DF4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteIngredient",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9001/carts/:cartId/ingredients/:ingredientId",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"carts",
+								":cartId",
+								"ingredients",
+								":ingredientId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "c_01JXCDNE9CV4KFR2G0EQDN2HVA"
+								},
+								{
+									"key": "ingredientId",
+									"value": "I_01JXCDN9M3WVWP75KNWW8JFS9X"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"alvin.chu1@devhabit.com\",\r\n  \"name\": \"Alvin Chu\",\r\n  \"password\": \"1234aA!\",\r\n  \"confirmPassword\": \"1234aA!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/auth/register",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"alvin.chu@devhabit.com\",\r\n  \"password\": \"1234aA!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/auth/login",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\" : \"T4tybo3ktlPsojEg749ICJdiFCO2diejDkzZ59pr6jA=\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9001/auth/refresh",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "GetCurrentUser",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9001/users/me",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9001/users/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "u_01JXKG2R22J2PE4620AG6PD9F3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MjY3MDMyOC1lNzMwLTRlZjUtYThlZi01ZjJiMzlkYzI1ZDMiLCJlbWFpbCI6ImFsdmluLmNodUBkZXZoYWJpdC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJNZW1iZXIiLCJhdWQiOiJncm9jZXJ5Y2hlZi5hcHAiLCJpc3MiOiJncm9jZXJ5Y2hlZi5hcGkiLCJleHAiOjE3NTA3MzczNzIsImlhdCI6MTc1MDczNTU3MiwibmJmIjoxNzUwNzM1NTcyfQ.lhw1GpLZ6OdLz8iCa04SEBUTvodLBOmVrXpWL4EFX7c",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,16 @@
+﻿@page "/ingredients"
+@inject NavigationManager Navi;
+@inject IngredientService IngredientService;
+
+<h3>Ingredient</h3>
+<IngredientDetail Ingredients="@Ingredients"></IngredientDetail>
+@code {
+    protected List<IngredientDto> Ingredients = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        
+        Ingredients = await IngredientService.GetIngredients(new IngredientQueryRequest());
+    }
+}

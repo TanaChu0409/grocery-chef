@@ -1,0 +1,50 @@
+﻿<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm-10">
+                <span>Result</span>
+            </div>
+            <div class="col-sm-2">
+                <button class="btn btn-warning">
+                    <span>Add</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Shelf life of date</th>
+                    <th>Is allergy</th>
+                    <th>created time</th>
+                    <th>updated time</th>
+                    <th>action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (IngredientDto ingredient in Ingredients)
+                {
+                    <tr>
+                        <td>@ingredient.Name</td>
+                        <td>@ingredient.ShelfLifeOfDate</td>
+                        <td>@ingredient.IsAllergy</td>
+                        <td>@ingredient.CreatedAtUtc</td>
+                        <td>@ingredient.UpdatedAtUtc</td>
+                        <td>
+                            <div class="text-wrap">
+                                <button class="btn btn-light">Edit</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<IngredientDto> Ingredients { get; init; } = new();
+}
