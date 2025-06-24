@@ -190,7 +190,8 @@ public sealed class IngredientController(
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateIngredient(
         string id,
-        [FromBody] UpdateIngredientDto updateIngredient)
+        UpdateIngredientDto updateIngredient,
+        InMemoryETagStore eTagStore)
     {
         string? userId = await userContext.GetUserIdAsync();
         if (string.IsNullOrWhiteSpace(userId))
@@ -210,6 +211,7 @@ public sealed class IngredientController(
         ingredient.UpdateFromDto(updateIngredient);
 
         await dbContext.SaveChangesAsync();
+        eTagStore.SetETag(Request.Path.Value!, ingredient.ToDto());
 
         return NoContent();
     }
