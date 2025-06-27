@@ -8,7 +8,8 @@ builder.AddApiService()
     .AddDatabase()
     .AddObservability()
     .AddApplicationServices()
-    .AddAuthenticationService();
+    .AddAuthenticationService()
+    .AddRateLimiting();
 
 WebApplication app = builder.Build();
 
@@ -29,7 +30,9 @@ app.UseExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<ETagMiddleware>();
+app.UseRateLimiter();
+
+//app.UseMiddleware<ETagMiddleware>();
 
 app.MapControllers();
 

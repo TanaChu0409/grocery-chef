@@ -12,10 +12,12 @@ using GroceryChef.Api.Services.Sorting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace GroceryChef.Api.Controllers.Recipes;
 
+[EnableRateLimiting("default")]
 [ResponseCache(Duration = 120)]
 [Authorize(Roles = Roles.Member)]
 [ApiController]

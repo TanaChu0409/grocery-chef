@@ -4,10 +4,12 @@ using GroceryChef.Api.DTOs.RecipeIngredients;
 using GroceryChef.Api.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace GroceryChef.Api.Controllers.Recipes;
 
+[EnableRateLimiting("default")]
 [Authorize(Roles = Roles.Member)]
 [ApiController]
 [Route("recipes/{recipeId}/ingredients")]

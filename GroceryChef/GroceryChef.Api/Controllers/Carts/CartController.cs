@@ -14,9 +14,11 @@ using GroceryChef.Api.Controllers.Recipes;
 using GroceryChef.Api.DTOs.Recipes;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace GroceryChef.Api.Controllers.Carts;
 
+[EnableRateLimiting("default")]
 [ResponseCache(Duration = 120)]
 [Authorize(Roles = Roles.Member)]
 [ApiController]

@@ -3,10 +3,12 @@ using GroceryChef.Api.DTOs.CartsIngredients;
 using GroceryChef.Api.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace GroceryChef.Api.Controllers.Carts;
 
+[EnableRateLimiting("default")]
 [Authorize(Roles = Roles.Member)]
 [ApiController]
 [Route("carts/{cartId}/ingredients")]

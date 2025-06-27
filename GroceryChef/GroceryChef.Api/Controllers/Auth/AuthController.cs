@@ -8,12 +8,14 @@ using GroceryChef.Api.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;
 
 namespace GroceryChef.Api.Controllers.Auth;
 
+[EnableRateLimiting("default")]
 [ApiController]
 [Route("auth")]
 [AllowAnonymous]

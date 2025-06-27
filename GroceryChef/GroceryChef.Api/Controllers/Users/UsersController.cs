@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using GroceryChef.Api.Entities;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace GroceryChef.Api.Controllers.Users;
 
+[EnableRateLimiting("default")]
 [Authorize(Roles = Roles.Member)]
 [ApiController]
 [Route("users")]
