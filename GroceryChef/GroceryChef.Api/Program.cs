@@ -1,6 +1,7 @@
 using GroceryChef.Api;
 using GroceryChef.Api.Extensions;
 using GroceryChef.Api.Middleware;
+using GroceryChef.Api.Settings;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.AddApiService()
@@ -9,6 +10,7 @@ builder.AddApiService()
     .AddObservability()
     .AddApplicationServices()
     .AddAuthenticationService()
+    .AddCorsPolicy()
     .AddRateLimiting();
 
 WebApplication app = builder.Build();
@@ -26,6 +28,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseExceptionHandler();
+
+app.UseCors(CorsOptions.PolicyName);
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,0 +1,68 @@
+﻿@page "/Login"
+@inject NavigationManager navigation
+@inject AuthService authService
+
+<div>
+    <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <InputText id="username" class="form-control" @bind-Value="loginModel.Email" />
+            <ValidationMessage For="@(() => loginModel.Email)" />
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <InputText id="password" type="password" class="form-control" @bind-Value="loginModel.Password" />
+            <ValidationMessage For="@(() => loginModel.Password)" />
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger mt-2">@errorMessage</div>
+        }
+    </EditForm>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private string? errorMessage;
+
+    private async Task HandleLogin()
+    {
+        if (string.IsNullOrWhiteSpace(loginModel.Email))
+        {
+            errorMessage = $"Email can't be empty";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(loginModel.Password))
+        {
+            errorMessage = $"Password can't be empty";
+            return;
+        }
+
+        bool isLogin = await authService.LoginAsync(new Dtos.Auth.LoginUserDto
+            {
+                Email = loginModel.Email,
+                Password = loginModel.Password
+            });
+
+        if (!isLogin)
+        {
+            errorMessage = "Login fail, please try again.";
+            return;
+        }
+
+        errorMessage = string.Empty;
+        navigation.NavigateTo("/");
+    }
+
+    public class LoginModel
+    {
+        [Required]
+        public string? Email { get; set; }
+        [Required]
+        public string? Password { get; set; }
+    }
+}
