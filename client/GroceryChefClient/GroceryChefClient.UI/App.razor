@@ -4,12 +4,9 @@
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
                     <PageTitle>Access Denied</PageTitle>
-                    @* <LayoutView Layout="@typeof(MainLayout)"> *@
                         <h1>Access Denied</h1>
                         <p role="alert">You are not authorized to access this page.</p>
-                    @* </LayoutView> *@
                 </NotAuthorized>
-                @* <FocusOnNavigate RouteData="@routeData" Selector="h1" /> *@
             </AuthorizeRouteView>
         </Found>
         <NotFound>

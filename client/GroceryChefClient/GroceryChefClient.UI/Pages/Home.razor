@@ -1,7 +1,16 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Grocery Chef</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<AuthorizeView>
+    <Authorized>
+        <h1>Welcome back!</h1>
+        Recipes? Check. Shopping list? Done.
+        All that's missing is you! Let's get cooking!
+    </Authorized>
+    <NotAuthorized>
+        <h1>Welcome to Grocery Chef!</h1>
+        <p>To get started, please <a href="/Login">log in</a>.</p>
+        <p>If you don't have an account, you can <a href="/Register">register here</a>.</p>
+    </NotAuthorized>
+</AuthorizeView>

@@ -8,4 +8,14 @@ public sealed record IngredientDto
     public required bool IsAllergy { get; init; }
     public required DateTime CreatedAtUtc { get; init; }
     public DateTime? UpdatedAtUtc { get; init; }
+
+    public IngredientViewModel ToViewModel() =>
+        new()
+        {
+            Id = Id,
+            Name = Name,
+            ShelfLifeOfDate = ShelfLifeOfDate,
+            IsAllergy = IsAllergy,
+            IsNotAllergy = !IsAllergy
+        };
 }

@@ -12,22 +12,22 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 
-builder.Services.AddScoped(sp => 
-    new HttpClient 
-    { 
+builder.Services.AddScoped<InMemoryTokenStore>();
+
+builder.Services.AddScoped(sp =>
+    new HttpClient
+    {
         BaseAddress = new Uri("https://localhost:9001"),
         DefaultRequestHeaders =
         {
             { "Accept", "application/vnd.grocerychef.hateoas.1+json" }
         }
     });
-
 builder.Services.AddScoped<AuthenticationStateProvider, AuthProvider>();
-builder.Services.AddScoped<InMemoryTokenStore>();
 
 builder.Services.AddTransient<AuthService>();
 builder.Services.AddTransient<IngredientService>();
-
+builder.Services.AddTransient<UserService>();
 
 builder.Services.AddBlazorBootstrap();
 

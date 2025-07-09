@@ -1,6 +1,16 @@
-﻿<AuthorizeView>
+﻿@using GroceryChefClient.UI.Dtos.Users
+@inject UserService userService
+<AuthorizeView>
     <Authorized>
-        Welcome, @context.User.Identity?.Name  <a href="/Logout">Logout</a>
+        @if (userDto is null)
+        {
+            <span>Loading...</span>
+            @GetCurrentUserAsync()
+        }
+        else
+        {
+            <span>Welcome, @(userDto?.Name ?? string.Empty) <a href="/Logout">Logout</a></span>
+        }
     </Authorized>
     <NotAuthorized>
         <a href="/Login">Login</a>
@@ -8,5 +18,11 @@
 </AuthorizeView>
 
 @code {
+    private UserDto? userDto;
 
+    private async Task GetCurrentUserAsync()
+    {
+        userDto = await userService.GetCurrentUserAsync();
+        StateHasChanged();
+    }
 }

@@ -1,10 +1,316 @@
 ﻿@page "/ingredients"
 @attribute [Authorize]
-@inject NavigationManager Navi;
-@inject IngredientService IngredientService;
 
 <h3>Ingredient</h3>
-<IngredientQuery></IngredientQuery>
-<IngredientDetail></IngredientDetail>
+<Card>
+    <CardHeader>
+        Ingredient Query
+    </CardHeader>
+    <CardBody>
+        <div class="row">
+            <div class="col-sm-2">
+                <span>Ingredient Name</span>
+            </div>
+            <div class="col-sm-10">
+                <input class="form-control" type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <span>Allergy</span>
+            </div>
+            <div class="col-sm-10">
+                @* <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="noSearchForAllergy" />
+                <label class="form-check-label" for="noSearchForAllergy"></label>
+                </div> *@
+
+            </div>
+        </div>
+    </CardBody>
+    <CardFooter>
+        <Button Color="ButtonColor.Primary"><Icon Name="IconName.Binoculars" />Search</Button>
+        <Button Color="ButtonColor.Danger"><Icon Name="IconName.Trash" />Clear</Button>
+    </CardFooter>
+</Card>
+<br />
+<Card>
+    <CardHeader>
+        <div class="row">
+            <div class="col-sm-10">
+                <span>
+                    Ingredient Detail
+                </span>
+            </div>
+            <div class="col-sm-2">
+                <Button Color="ButtonColor.Warning" @onclick="ShowAddIngredientComponet">
+                    <Icon Name="IconName.Plus" />
+                    Add
+                </Button>
+            </div>
+        </div>
+    </CardHeader>
+    <CardBody>
+        <Grid @ref="grid"
+              TItem="IngredientDto"
+              Class="table table-hover table-bordered table-striped"
+              DataProvider="IngredientDataProvider"
+              AllowFiltering="true"
+              AllowPaging="true"
+              AllowSorting="true"
+              Responsive="true"
+              EmptyText="So empty.. Time for a foodventure!">
+
+            <GridColumn TItem="IngredientDto"
+                        HeaderText="Ingredient Name"
+                        PropertyName="Name"
+                        SortString="name"
+                        SortKeySelector="@(item => item.Name)"
+                        FilterTextboxWidth="120">
+                @context.Name
+            </GridColumn>
+            <GridColumn TItem="IngredientDto"
+                        HeaderText="Shelf Life"
+                        PropertyName="ShelfLifeOfDate"
+                        SortString="shelfLifeOfDate"
+                        SortKeySelector="@(item => item.ShelfLifeOfDate)"
+                        FilterTextboxWidth="80">
+                @context.ShelfLifeOfDate
+            </GridColumn>
+            <GridColumn TItem="IngredientDto"
+                        HeaderText="Allergy"
+                        PropertyName="IsAllergy"
+                        SortString="isAllergy"
+                        SortKeySelector="@(item => item.IsAllergy)"
+                        FilterTextboxWidth="80">
+                @context.IsAllergy
+            </GridColumn>
+            <GridColumn TItem="IngredientDto"
+                        HeaderText="Create Time"
+                        PropertyName="CreatedAtUtc"
+                        SortString="createdAtUtc"
+                        SortKeySelector="@(item => item.CreatedAtUtc)"
+                        FilterTextboxWidth="120">
+                @context.CreatedAtUtc.ToLocalTime()
+            </GridColumn>
+            <GridColumn TItem="IngredientDto"
+                        HeaderText="Update Time"
+                        PropertyName="UpdatedAtUtc"
+                        SortString="updatedAtUtc"
+                        SortKeySelector="@(item => item.UpdatedAtUtc)"
+                        FilterTextboxWidth="120">
+                @context.UpdatedAtUtc?.ToLocalTime()
+            </GridColumn>
+            <GridColumn TItem="IngredientDto"
+                        HeaderText="Action">
+                <Button Color="ButtonColor.Primary" @onclick="((args) => ShowEditIngredientComponet(args, context.Id))">
+                    <Icon Name="IconName.PencilFill" />
+                    Edit
+                </Button>
+            </GridColumn>
+        </Grid>
+    </CardBody>
+</Card>
+
+<Modal @ref="modalCreate"
+       Title="Create ingredient"
+       Size="ModalSize.Large"
+       UseStaticBackdrop="true"
+       CloseOnEscape="false">
+    <BodyTemplate>
+        <div class="row">
+            <div class="col-sm-4">
+                <span>Name</span>
+            </div>
+            <div class="col-sm-6">
+                <TextInput @bind-Value="@createIngredientViewModel.Name"
+                           Placeholder="Please enter ingredient name">
+                </TextInput>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <span>Shelf life Of date</span>
+            </div>
+            <div class="col-sm-6">
+                <NumberInput TValue="int"
+                             @bind-Value="@createIngredientViewModel.ShelfLifeOfDate"
+                             Placeholder="Please enter ingredient shelf life of date">
+                </NumberInput>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <span>Is allergy?</span>
+            </div>
+            <div class="col-sm-6">
+                <RadioInput Name="IngredientIsAllergy"
+                            Label="Yes"
+                            @bind-Value="createIngredientViewModel.IsAllergy">
+                </RadioInput>
+                <RadioInput Name="IngredientIsAllergy"
+                            Label="No"
+                            @bind-Value="createIngredientViewModel.IsNotAllergy">
+                </RadioInput>
+            </div>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideCreateModalClick">Close</Button>
+        <Button Color="ButtonColor.Primary" @onclick="AddIngredientAsync"><Icon Name="IconName.FloppyFill" />Save</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="modalEdit"
+       Title="Edit ingredient"
+       Size="ModalSize.Large"
+       UseStaticBackdrop="true"
+       CloseOnEscape="false">
+    <BodyTemplate>
+        <div class="row">
+            <div class="col-sm-4">
+                <span>Name</span>
+            </div>
+            <div class="col-sm-6">
+                <TextInput @bind-Value="@editIngredientViewModel.Name"
+                           Placeholder="Please enter ingredient name">
+                </TextInput>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <span>Shelf life Of date</span>
+            </div>
+            <div class="col-sm-6">
+                <NumberInput TValue="int"
+                             @bind-Value="@editIngredientViewModel.ShelfLifeOfDate"
+                             Placeholder="Please enter ingredient shelf life of date">
+                </NumberInput>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <span>Is allergy?</span>
+            </div>
+            <div class="col-sm-6">
+                <RadioInput Name="IngredientIsAllergy"
+                            Label="Yes"
+                            @bind-Value="editIngredientViewModel.IsAllergy">
+                </RadioInput>
+                <RadioInput Name="IngredientIsAllergy"
+                            Label="No"
+                            @bind-Value="editIngredientViewModel.IsNotAllergy">
+                </RadioInput>
+            </div>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideEditModalClick">Close</Button>
+        <Button Color="ButtonColor.Primary" @onclick="EditIngredientAsync"><Icon Name="IconName.FloppyFill" />Save</Button>
+    </FooterTemplate>
+</Modal>
+
 @code {
+    private Grid<IngredientDto> grid = default!;
+    private Modal modalCreate = default!;
+    private Modal modalEdit = default!;
+
+    private IngredientViewModel createIngredientViewModel = new();
+    private IngredientViewModel editIngredientViewModel = new();
+
+    [Inject]
+    private IngredientService ingredientService { get; set; }
+
+    private async Task<GridDataProviderResult<IngredientDto>> IngredientDataProvider(
+        GridDataProviderRequest<IngredientDto> request)
+    {
+        string sorting = string.Empty;
+        string direction = string.Empty;
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            sorting = string.Join(
+                ',',
+                request.Sorting.Select(s => s.SortString).ToArray());
+            direction = GetSortDirectionString(request.Sorting.FirstOrDefault()!.SortDirection);
+        }
+
+        List<IngredientDto> result = await ingredientService.GetIngredients(
+            new IngredientQueryRequest
+                {
+                    Page = request.PageNumber,
+                    PageSize = request.PageSize,
+                    Sort = $"{sorting} {direction}",
+                });
+
+        return await Task.FromResult(
+            new GridDataProviderResult<IngredientDto>
+                {
+                    Data = result,
+                    TotalCount = result.Count
+                });
+    }
+
+    private string GetSortDirectionString(SortDirection sortDirection) =>
+        sortDirection switch
+        {
+            SortDirection.Ascending => "asc",
+            SortDirection.Descending => "desc",
+            _ => string.Empty
+        };
+
+    private async Task ShowAddIngredientComponet()
+    {
+        await modalCreate.ShowAsync();
+    }
+
+    private async Task OnHideCreateModalClick()
+    {
+        await modalCreate.HideAsync();
+        await grid.RefreshDataAsync();
+    }
+
+    private async Task AddIngredientAsync()
+    {
+        try
+        {
+            await ingredientService.AddIngredient(
+            new CreateIngredientDto
+                {
+                    Name = createIngredientViewModel.Name,
+                    ShelfLifeOfDate = createIngredientViewModel.ShelfLifeOfDate,
+                    IsAllergy = createIngredientViewModel.IsAllergy && !createIngredientViewModel.IsNotAllergy
+                });
+
+            await this.OnHideCreateModalClick();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    private async Task ShowEditIngredientComponet(EventArgs eventArgs, string id)
+    {
+        IngredientDto ingredient = await ingredientService.GetIngredientAsync(id);
+        editIngredientViewModel = ingredient.ToViewModel();
+        await modalEdit.ShowAsync();
+    }
+
+    private async Task OnHideEditModalClick()
+    {
+        await modalEdit.HideAsync();
+        await grid.RefreshDataAsync();
+    }
+
+    private async Task EditIngredientAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(editIngredientViewModel.Id))
+        {
+            await ingredientService.UpdateIngredient(
+                editIngredientViewModel.Id,
+                editIngredientViewModel.ToDto());
+        }
+
+        await this.OnHideEditModalClick();
+    }
 }

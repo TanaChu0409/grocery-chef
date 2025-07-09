@@ -1,11 +1,14 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="bb-page">
-
-    <Sidebar @ref="sidebar"
-             IconName="IconName.BootstrapFill"
-             Title="Blazor Bootstrap"
-             DataProvider="SidebarDataProvider" />
+    <AuthorizeView>
+        <Authorized>
+            <Sidebar @ref="sidebar"
+                     IconName="IconName.Basket3Fill"
+                     Title="Grocery Chef"
+                     DataProvider="SidebarDataProvider" />
+        </Authorized>
+    </AuthorizeView>
 
     <main>
         <div class="bb-top-row px-4 d-flex justify-content-end">
