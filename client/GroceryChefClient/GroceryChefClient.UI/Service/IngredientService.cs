@@ -18,15 +18,22 @@ public sealed class IngredientService(
 {
     private const string IngredientUri = "ingredients";
 
-    public async Task<List<IngredientDto>> GetIngredients(IngredientQueryRequest queryRequest)
+    public async Task<List<IngredientDto>> GetIngredients(
+        IngredientQueryRequest queryRequest,
+        CancellationToken cancellationToken)
     {
         try
         {
             NameValueCollection query = HttpUtility.ParseQueryString(string.Empty);
             foreach (PropertyInfo prop in queryRequest.GetType().GetProperties())
             {
+                if (prop.Name == nameof(queryRequest.Filters))
+                {
+                    continue;
+                }
+
                 object? value = prop.GetValue(queryRequest);
-                if (value is not null)
+                if (value is not null && value is not System.Collections.IEnumerable enumerable)
                 {
                     query[prop.Name] = value.ToString();
                 }
@@ -37,12 +44,12 @@ public sealed class IngredientService(
                 new AuthenticationHeaderValue(
                     "Bearer",
                     await inMemoryTokenStore.GetTokenAsync());
-            HttpResponseMessage response = await httpClient.GetAsync(uri);
+            HttpResponseMessage response = await httpClient.GetAsync(uri, cancellationToken);
 
             response.EnsureSuccessStatusCode();
 
             PaginationResult<IngredientDto>? ingredientWithPagination =
-                await response.Content.ReadFromJsonAsync<PaginationResult<IngredientDto>>();
+                await response.Content.ReadFromJsonAsync<PaginationResult<IngredientDto>>(cancellationToken);
 
             return ingredientWithPagination?.Items ?? [];
         }

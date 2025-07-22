@@ -2,9 +2,9 @@
 	"info": {
 		"_postman_id": "fac3399e-5673-4395-8f65-19fe6097138f",
 		"name": "GroceryChef",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "44278846",
-		"_collection_link": "https://galactic-station-6071759.postman.co/workspace/1bc8e8a2-2fcb-4efa-87e7-45c53f1457d0/collection/44278846-fac3399e-5673-4395-8f65-19fe6097138f?action=share&source=collection_link&creator=44278846"
+		"_collection_link": "https://galactic-station-6071759.postman.co/workspace/Tana'-Turay's-Workspace~1bc8e8a2-2fcb-4efa-87e7-45c53f1457d0/collection/44278846-fac3399e-5673-4395-8f65-19fe6097138f?action=share&source=collection_link&creator=44278846"
 	},
 	"item": [
 		{
@@ -22,12 +22,10 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:9001/ingredients?page=1&pageSize=10",
-							"protocol": "https",
+							"raw": "{{baseURL}}/ingredients?page=1&pageSize=10&isAllergy=true",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"ingredients"
 							],
@@ -39,7 +37,8 @@
 								},
 								{
 									"key": "sort",
-									"value": "name,frequency.type desc",
+									"value": "name desc",
+									"description": "name,frequency.type desc",
 									"disabled": true
 								},
 								{
@@ -57,8 +56,7 @@
 								},
 								{
 									"key": "isAllergy",
-									"value": "true",
-									"disabled": true
+									"value": "true"
 								}
 							]
 						}
@@ -83,12 +81,10 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:9001/ingredients/:id",
-							"protocol": "https",
+							"raw": "{{baseURL}}/ingredients/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"ingredients",
 								":id"
@@ -96,7 +92,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "I_01JXKZWRZ3NBWVSE93FFW15008"
+									"value": "I_01JZ544N1M3XW284CRQAGZQS1F"
 								}
 							]
 						}
@@ -116,24 +112,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"青菜\",\r\n    \"shelfLifeOfDate\": 5,\r\n    \"isAllergy\": false\r\n  }",
+							"raw": "{\r\n    \"name\": \"青菜\",\r\n    \"shelfLifeOfDate\": 5,\r\n    \"isAllergy\": false\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": {
-							"raw": "https://localhost:9001/ingredients",
-							"protocol": "https",
-							"host": [
-								"localhost"
-							],
-							"port": "9001",
-							"path": [
-								"ingredients"
-							]
-						}
+						"url": "{{baseURL}}/ingredients"
 					},
 					"response": []
 				},
@@ -158,12 +144,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://localhost:9001/ingredients/:id",
-							"protocol": "https",
+							"raw": "{{baseURL}}/ingredients/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"ingredients",
 								":id"
@@ -200,12 +184,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://localhost:9001/ingredients/:id",
-							"protocol": "https",
+							"raw": "{{baseURL}}/ingredients/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"ingredients",
 								":id"
@@ -226,12 +208,10 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:9001/ingredients/:id",
-							"protocol": "https",
+							"raw": "{{baseURL}}/ingredients/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"ingredients",
 								":id"
@@ -263,12 +243,10 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:9001/recipes",
-							"protocol": "https",
+							"raw": "{{baseURL}}/recipes",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"recipes"
 							],
@@ -315,12 +293,10 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:9001/recipes/:id",
-							"protocol": "https",
+							"raw": "{{baseURL}}/recipes/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"recipes",
 								":id"
@@ -355,17 +331,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "https://localhost:9001/recipes",
-							"protocol": "https",
-							"host": [
-								"localhost"
-							],
-							"port": "9001",
-							"path": [
-								"recipes"
-							]
-						}
+						"url": "{{baseURL}}/recipes"
 					},
 					"response": []
 				},
@@ -384,12 +350,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://localhost:9001/recipes/:id",
-							"protocol": "https",
+							"raw": "{{baseURL}}/recipes/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"recipes",
 								":id"
@@ -419,12 +383,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://localhost:9001/recipes/:id",
-							"protocol": "https",
+							"raw": "{{baseURL}}/recipes/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"recipes",
 								":id"
@@ -445,12 +407,10 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:9001/recipes/:id",
-							"protocol": "https",
+							"raw": "{{baseURL}}/recipes/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"recipes",
 								":id"
@@ -470,18 +430,7 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": {
-							"raw": "https://localhost:9001/recipes/units",
-							"protocol": "https",
-							"host": [
-								"localhost"
-							],
-							"port": "9001",
-							"path": [
-								"recipes",
-								"units"
-							]
-						}
+						"url": "{{baseURL}}/recipes/units"
 					},
 					"response": []
 				}
@@ -505,12 +454,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://localhost:9001/recipes/:id/ingredients",
-							"protocol": "https",
+							"raw": "{{baseURL}}/recipes/:id/ingredients",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"recipes",
 								":id",
@@ -543,12 +490,10 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:9001/carts",
-							"protocol": "https",
+							"raw": "{{baseURL}}/carts",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"carts"
 							],
@@ -595,12 +540,10 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:9001/carts/:id",
-							"protocol": "https",
+							"raw": "{{baseURL}}/carts/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"carts",
 								":id"
@@ -635,17 +578,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "https://localhost:9001/carts",
-							"protocol": "https",
-							"host": [
-								"localhost"
-							],
-							"port": "9001",
-							"path": [
-								"carts"
-							]
-						}
+						"url": "{{baseURL}}/carts"
 					},
 					"response": []
 				},
@@ -670,12 +603,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://localhost:9001/carts/:id",
-							"protocol": "https",
+							"raw": "{{baseURL}}/carts/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"carts",
 								":id"
@@ -702,12 +633,10 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:9001/carts/:id",
-							"protocol": "https",
+							"raw": "{{baseURL}}/carts/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"carts",
 								":id"
@@ -748,12 +677,10 @@
 							}
 						},
 						"url": {
-							"raw": "https://localhost:9001/carts/:cartId/ingredients",
-							"protocol": "https",
+							"raw": "{{baseURL}}/carts/:cartId/ingredients",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"carts",
 								":cartId",
@@ -781,12 +708,10 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:9001/carts/:cartId/ingredients/:ingredientId/bought",
-							"protocol": "https",
+							"raw": "{{baseURL}}/carts/:cartId/ingredients/:ingredientId/bought",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"carts",
 								":cartId",
@@ -814,12 +739,10 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:9001/carts/:cartId/ingredients/:ingredientId",
-							"protocol": "https",
+							"raw": "{{baseURL}}/carts/:cartId/ingredients/:ingredientId",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"carts",
 								":cartId",
@@ -862,18 +785,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "https://localhost:9001/auth/register",
-							"protocol": "https",
-							"host": [
-								"localhost"
-							],
-							"port": "9001",
-							"path": [
-								"auth",
-								"register"
-							]
-						}
+						"url": "{{baseURL}}/auth/register"
 					},
 					"response": []
 				},
@@ -894,18 +806,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "https://localhost:9001/auth/login",
-							"protocol": "https",
-							"host": [
-								"localhost"
-							],
-							"port": "9001",
-							"path": [
-								"auth",
-								"login"
-							]
-						}
+						"url": "{{baseURL}}/auth/login"
 					},
 					"response": []
 				},
@@ -923,18 +824,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "https://localhost:9001/auth/refresh",
-							"protocol": "https",
-							"host": [
-								"localhost"
-							],
-							"port": "9001",
-							"path": [
-								"auth",
-								"refresh"
-							]
-						}
+						"url": "{{baseURL}}/auth/refresh"
 					},
 					"response": []
 				}
@@ -948,18 +838,7 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": {
-							"raw": "https://localhost:9001/users/me",
-							"protocol": "https",
-							"host": [
-								"localhost"
-							],
-							"port": "9001",
-							"path": [
-								"users",
-								"me"
-							]
-						}
+						"url": "{{baseURL}}/users/me"
 					},
 					"response": []
 				},
@@ -969,12 +848,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:9001/users/:id",
-							"protocol": "https",
+							"raw": "{{baseURL}}/users/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "9001",
 							"path": [
 								"users",
 								":id"
@@ -994,13 +871,9 @@
 	],
 	"auth": {
 		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MjY3MDMyOC1lNzMwLTRlZjUtYThlZi01ZjJiMzlkYzI1ZDMiLCJlbWFpbCI6ImFsdmluLmNodUBkZXZoYWJpdC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJNZW1iZXIiLCJhdWQiOiJncm9jZXJ5Y2hlZi5hcHAiLCJpc3MiOiJncm9jZXJ5Y2hlZi5hcGkiLCJleHAiOjE3NTA3MzczNzIsImlhdCI6MTc1MDczNTU3MiwibmJmIjoxNzUwNzM1NTcyfQ.lhw1GpLZ6OdLz8iCa04SEBUTvodLBOmVrXpWL4EFX7c",
-				"type": "string"
-			}
-		]
+		"bearer": {
+			"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MjY3MDMyOC1lNzMwLTRlZjUtYThlZi01ZjJiMzlkYzI1ZDMiLCJlbWFpbCI6ImFsdmluLmNodUBkZXZoYWJpdC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJNZW1iZXIiLCJhdWQiOiJncm9jZXJ5Y2hlZi5hcHAiLCJpc3MiOiJncm9jZXJ5Y2hlZi5hcGkiLCJleHAiOjE3NTE1OTM3MTgsImlhdCI6MTc1MTU5MTkxOCwibmJmIjoxNzUxNTkxOTE4fQ.VMLxsSsMDAyaHmlbGiQd0x6osfHBuVDLwUEmOyRY1IY"
+		}
 	},
 	"event": [
 		{
@@ -1022,6 +895,13 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "https://localhost:9001",
+			"type": "default"
 		}
 	]
 }

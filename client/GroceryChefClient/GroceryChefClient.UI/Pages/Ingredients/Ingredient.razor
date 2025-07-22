@@ -4,38 +4,6 @@
 <h3>Ingredient</h3>
 <Card>
     <CardHeader>
-        Ingredient Query
-    </CardHeader>
-    <CardBody>
-        <div class="row">
-            <div class="col-sm-2">
-                <span>Ingredient Name</span>
-            </div>
-            <div class="col-sm-10">
-                <input class="form-control" type="text" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2">
-                <span>Allergy</span>
-            </div>
-            <div class="col-sm-10">
-                @* <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="noSearchForAllergy" />
-                <label class="form-check-label" for="noSearchForAllergy"></label>
-                </div> *@
-
-            </div>
-        </div>
-    </CardBody>
-    <CardFooter>
-        <Button Color="ButtonColor.Primary"><Icon Name="IconName.Binoculars" />Search</Button>
-        <Button Color="ButtonColor.Danger"><Icon Name="IconName.Trash" />Clear</Button>
-    </CardFooter>
-</Card>
-<br />
-<Card>
-    <CardHeader>
         <div class="row">
             <div class="col-sm-10">
                 <span>
@@ -102,7 +70,8 @@
                 @context.UpdatedAtUtc?.ToLocalTime()
             </GridColumn>
             <GridColumn TItem="IngredientDto"
-                        HeaderText="Action">
+                        HeaderText="Action"
+                        Filterable="false">
                 <Button Color="ButtonColor.Primary" @onclick="((args) => ShowEditIngredientComponet(args, context.Id))">
                     <Icon Name="IconName.PencilFill" />
                     Edit
@@ -240,7 +209,9 @@
                     Page = request.PageNumber,
                     PageSize = request.PageSize,
                     Sort = $"{sorting} {direction}",
-                });
+                    Filters = request.Filters
+                },
+            request.CancellationToken);
 
         return await Task.FromResult(
             new GridDataProviderResult<IngredientDto>
