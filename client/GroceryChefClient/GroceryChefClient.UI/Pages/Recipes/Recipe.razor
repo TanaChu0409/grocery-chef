@@ -1,0 +1,195 @@
+﻿@page "/recipes"
+@attribute [Authorize]
+
+<h3>Recipe</h3>
+<Card>
+    <CardHeader>
+        <div class="row">
+            <div class="col-sm-2">
+                <Button Color="ButtonColor.Warning" @onclick="ShowAddRecipeComponet">
+                    <Icon Name="IconName.Plus" />
+                    Add
+                </Button>
+            </div>
+        </div>
+    </CardHeader>
+    <CardBody>
+        <Grid @ref="grid"
+              TItem="RecipeDto"
+              Class="table table-hover table-bordered table-striped"
+              DataProvider="RecipeDataProvider"
+              AllowFiltering="true"
+              AllowPaging="true"
+              AllowSorting="true"
+              Responsive="true"
+              EmptyText="No recipes yet? Time for the chef in you to shine!">
+
+            <GridColumn TItem="RecipeDto"
+                        HeaderText="Name"
+                        PropertyName="Name"
+                        SortString="name"
+                        SortKeySelector="@(item => item.Name)">
+                @context.Name
+            </GridColumn>
+
+            <GridColumn TItem="RecipeDto"
+                        HeaderText="Description"
+                        PropertyName="Descriptions"
+                        SortString="description"
+                        SortKeySelector="@(item => item.Description)">
+                @context.Description
+            </GridColumn>
+
+            <GridColumn TItem="RecipeDto"
+                        HeaderText="Create Time"
+                        PropertyName="CreatedAtUtc"
+                        SortString="createdAtUtc"
+                        SortKeySelector="@(item => item.CreatedAtUtc)">
+                @context.CreatedAtUtc.ToLocalTime()
+            </GridColumn>
+
+            <GridColumn TItem="RecipeDto"
+                        HeaderText="Update Time"
+                        PropertyName="UpdatedAtUtc"
+                        SortString="updatedAtUtc"
+                        SortKeySelector="@(item => item.UpdatedAtUtc)">
+                @context.UpdatedAtUtc?.ToLocalTime()
+            </GridColumn>
+
+            <GridColumn TItem="RecipeDto"
+                        HeaderText="Action"
+                        Filterable="false">
+                <Button Color="ButtonColor.Primary" @onclick="((args) => ShowEditRecipeComponet(args, context.Id))">
+                    <Icon Name="IconName.PencilFill" />
+                    Edit
+                </Button>
+            </GridColumn>
+        </Grid>
+    </CardBody>
+</Card>
+
+<Modal @ref="modalCreate"
+       Title="Create recipe"
+       Size="ModalSize.Large"
+       UseStaticBackdrop="true"
+       CloseOnEscape="false">
+    <BodyTemplate>
+        <EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Name<span class="text-danger">*</span></span>
+                </div>
+                <div class="col-sm-6">
+                    <TextInput @bind-Value="@createRecipeViewModel.Name"
+                               Placeholder="Please enter recipe name" />
+                    <ValidationMessage For="@(() => createRecipeViewModel.Name)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Content<span class="text-danger">*</span></span>
+                </div>
+                <div class="col-sm-6">
+                    <TextAreaInput @bind-Value="@createRecipeViewModel.Content"
+                                   Rows="5"
+                                   MaxLength="3000" />
+                    <ValidationMessage For="@(() => createRecipeViewModel.Content)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Description</span>
+                </div>
+                <div class="col-sm-6">
+                    <TextInput @bind-Value="@createRecipeViewModel.Description"
+                               Placeholder="Please enter recipe description" />
+                </div>
+            </div>
+
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary">Close</Button>
+        <Button Color="ButtonColor.Success" @onclick="HandleOnValidSubmit">Save</Button>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    private Grid<RecipeDto> grid = default!;
+    private Modal modalCreate = default!;
+    private Modal modalEdit = default!;
+    private RecipeViewModel createRecipeViewModel = new();
+    private EditContext editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(createRecipeViewModel);
+        base.OnInitialized();
+    }
+
+    [Inject]
+    private RecipeService recipeService { get; set; }
+
+    private async Task<GridDataProviderResult<RecipeDto>> RecipeDataProvider(
+        GridDataProviderRequest<RecipeDto> request)
+    {
+        string sorting = string.Empty;
+        string direction = string.Empty;
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            sorting = string.Join(
+                ',',
+                request.Sorting.Select(s => s.SortString).ToArray());
+            direction = request.Sorting.FirstOrDefault()!.SortDirection.GetSortDirectionString();
+        }
+
+        var result = await recipeService.GetRecipes(
+            new RecipeQueryRequest
+                {
+                    Page = request.PageNumber,
+                    PageSize = request.PageSize,
+                    Sort = $"{sorting} {direction}",
+                    Filters = request.Filters
+                },
+            request.CancellationToken);
+
+        return await Task.FromResult(
+            new GridDataProviderResult<RecipeDto>
+                {
+                    Data = result,
+                    TotalCount = result.Count
+                });
+    }
+
+    private async Task ShowAddRecipeComponet()
+    {
+        await modalCreate.ShowAsync();
+    }
+
+    public void HandleOnValidSubmit()
+    {
+        try
+        {
+            // additional check
+            if (editContext?.Validate() == true)
+            {
+                // do something
+                // submit the form
+                Console.WriteLine("Form submitted successfully");
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+
+    }
+
+    private async Task ShowEditRecipeComponet(EventArgs eventArgs, string id)
+    {
+        throw new NotImplementedException();
+    }
+}

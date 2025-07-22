@@ -28,6 +28,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, AuthProvider>();
 builder.Services.AddTransient<AuthService>();
 builder.Services.AddTransient<IngredientService>();
 builder.Services.AddTransient<UserService>();
+builder.Services.AddTransient<RecipeService>();
 
 builder.Services.AddBlazorBootstrap();
 

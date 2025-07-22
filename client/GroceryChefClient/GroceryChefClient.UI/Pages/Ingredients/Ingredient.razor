@@ -5,11 +5,6 @@
 <Card>
     <CardHeader>
         <div class="row">
-            <div class="col-sm-10">
-                <span>
-                    Ingredient Detail
-                </span>
-            </div>
             <div class="col-sm-2">
                 <Button Color="ButtonColor.Warning" @onclick="ShowAddIngredientComponet">
                     <Icon Name="IconName.Plus" />
@@ -81,6 +76,7 @@
     </CardBody>
 </Card>
 
+<!--Add-->
 <Modal @ref="modalCreate"
        Title="Create ingredient"
        Size="ModalSize.Large"
@@ -130,6 +126,7 @@
     </FooterTemplate>
 </Modal>
 
+<!--Edit-->
 <Modal @ref="modalEdit"
        Title="Edit ingredient"
        Size="ModalSize.Large"
@@ -200,7 +197,7 @@
             sorting = string.Join(
                 ',',
                 request.Sorting.Select(s => s.SortString).ToArray());
-            direction = GetSortDirectionString(request.Sorting.FirstOrDefault()!.SortDirection);
+            direction = request.Sorting.FirstOrDefault()!.SortDirection.GetSortDirectionString();
         }
 
         List<IngredientDto> result = await ingredientService.GetIngredients(
@@ -220,14 +217,6 @@
                     TotalCount = result.Count
                 });
     }
-
-    private string GetSortDirectionString(SortDirection sortDirection) =>
-        sortDirection switch
-        {
-            SortDirection.Ascending => "asc",
-            SortDirection.Descending => "desc",
-            _ => string.Empty
-        };
 
     private async Task ShowAddIngredientComponet()
     {

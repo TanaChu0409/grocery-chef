@@ -5,7 +5,6 @@ namespace GroceryChefClient.UI.Dtos.Ingredients;
 
 public sealed record IngredientQueryRequest : BaseQueryRequest
 {
-    public IEnumerable<FilterItem> Filters { get; init; }
     public bool? IsAllergy =>
         Filters.Any(f => f.PropertyName == nameof(IsAllergy)) ?
         Filters.FirstOrDefault(f => f.PropertyName == nameof(IsAllergy))?.Value.ToLowerInvariant() == "true" :
