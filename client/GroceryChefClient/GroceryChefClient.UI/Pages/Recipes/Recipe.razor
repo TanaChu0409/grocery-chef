@@ -59,14 +59,30 @@
             <GridColumn TItem="RecipeDto"
                         HeaderText="Action"
                         Filterable="false">
-                <Button Color="ButtonColor.Primary" @onclick="((args) => ShowEditRecipeComponet(args, context.Id))">
-                    <Icon Name="IconName.PencilFill" />
-                    Edit
-                </Button>
-                <Button Color="ButtonColor.Danger" @onclick="((args) => ConfirmationDeleteRecipeAsync(args, context.Id))">
-                    <Icon Name="IconName.Trash2Fill" />
-                    Delete
-                </Button>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <Button Color="ButtonColor.Primary" @onclick="((args) => ShowEditRecipeComponet(args, context.Id))">
+                            <Icon Name="IconName.PencilFill" />
+                            Edit
+                        </Button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <Button Color="ButtonColor.Secondary">
+                            <Icon Name="IconName.Plus" />
+                            Add ingredients
+                        </Button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <Button Color="ButtonColor.Danger" @onclick="((args) => ConfirmationDeleteRecipeAsync(args, context.Id))">
+                            <Icon Name="IconName.Trash2Fill" />
+                            Delete
+                        </Button>
+                    </div>
+                </div>
             </GridColumn>
         </Grid>
     </CardBody>
@@ -170,12 +186,28 @@
     </FooterTemplate>
 </Modal>
 
+<Modal @ref="modalAddIngredient"
+       Title="Add Ingredients"
+       Size="ModalSize.Large"
+       UseStaticBackdrop="true"
+       CloseOnEscape="false">
+    <BodyTemplate>
+        <!--User Sortable List-->
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary">Close</Button>
+        <Button Color="ButtonColor.Success">Save</Button>
+    </FooterTemplate>
+</Modal>
+
 <ConfirmDialog @ref="deleteDialog" />
 
 @code {
     private Grid<RecipeDto> grid = default!;
     private Modal modalCreate = default!;
     private Modal modalEdit = default!;
+    private Modal modalAddIngredient = default!;
+
     private ConfirmDialog deleteDialog = default!;
 
     private RecipeViewModel createRecipeViewModel;
