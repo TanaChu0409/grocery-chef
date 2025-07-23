@@ -1,0 +1,16 @@
+﻿<Modal @ref="errorModal"
+       Title="Error">
+    <BodyTemplate>
+        <div class="row">
+            <div class="alert alert-danger">@Exceptions.Message</div>
+        </div>
+    </BodyTemplate>
+</Modal>
+
+@code {
+    private Modal errorModal = default!;
+
+    [Parameter]
+    public Exception Exceptions { get; set; }
+
+}

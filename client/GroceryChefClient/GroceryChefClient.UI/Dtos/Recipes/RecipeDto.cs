@@ -9,4 +9,13 @@ public sealed record RecipeDto
     public required bool IsArchived { get; init; }
     public required DateTime CreatedAtUtc { get; init; }
     public DateTime? UpdatedAtUtc { get; init; }
+
+    public RecipeViewModel ToViewModel() =>
+        new()
+        {
+            Id = Id,
+            Name = Name,
+            Content = Content,
+            Description = Description
+        };
 }

@@ -76,4 +76,88 @@ public sealed class RecipeService(
             throw;
         }
     }
+
+    public async Task<RecipeDto> GetRecipeAsync(string id)
+    {
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(
+                "Bearer",
+                await inMemoryTokenStore.GetTokenAsync());
+            HttpResponseMessage response = await httpClient.GetAsync($"{RecipeUri}/{id}");
+
+            response.EnsureSuccessStatusCode();
+
+            RecipeDto? recipe = await response.Content.ReadFromJsonAsync<RecipeDto>();
+
+            if (recipe is null)
+            {
+                throw new Exception("Recipe not found");
+            }
+
+            return recipe;
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+
+            return default;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public async Task UpdateRecipeAsync(string id, UpdateRecipeDto updateRecipe)
+    {
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(
+                "Bearer",
+                await inMemoryTokenStore.GetTokenAsync());
+
+            HttpResponseMessage response = await httpClient.PutAsJsonAsync(
+                $"{RecipeUri}/{id}",
+                updateRecipe);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public async Task DeleteRecipeAsync(string id)
+    {
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(
+                "Bearer",
+                await inMemoryTokenStore.GetTokenAsync());
+
+            HttpResponseMessage response = await httpClient.DeleteAsync($"{RecipeUri}/{id}");
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+        }
+        catch
+        {
+            throw;
+        }
+    }
 }

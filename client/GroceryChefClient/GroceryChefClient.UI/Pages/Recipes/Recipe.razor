@@ -63,18 +63,23 @@
                     <Icon Name="IconName.PencilFill" />
                     Edit
                 </Button>
+                <Button Color="ButtonColor.Danger" @onclick="((args) => ConfirmationDeleteRecipeAsync(args, context.Id))">
+                    <Icon Name="IconName.Trash2Fill" />
+                    Delete
+                </Button>
             </GridColumn>
         </Grid>
     </CardBody>
 </Card>
 
+<!--Add-->
 <Modal @ref="modalCreate"
        Title="Create recipe"
        Size="ModalSize.Large"
        UseStaticBackdrop="true"
        CloseOnEscape="false">
     <BodyTemplate>
-        <EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
+        <EditForm EditContext="@createContext" OnValidSubmit="AddRecipe">
             <DataAnnotationsValidator />
 
             <div class="row">
@@ -111,23 +116,73 @@
         </EditForm>
     </BodyTemplate>
     <FooterTemplate>
-        <Button Color="ButtonColor.Secondary">Close</Button>
-        <Button Color="ButtonColor.Success" @onclick="HandleOnValidSubmit">Save</Button>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideCreateModalClick">Close</Button>
+        <Button Color="ButtonColor.Success" @onclick="AddRecipe">Save</Button>
     </FooterTemplate>
 </Modal>
+
+<!--Edit-->
+<Modal @ref="modalEdit"
+       Title="Edit recipe"
+       Size="ModalSize.Large"
+       UseStaticBackdrop="true"
+       CloseOnEscape="false">
+    <BodyTemplate>
+        <EditForm EditContext="@editContext" OnValidSubmit="EditRecipe">
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Name<span class="text-danger">*</span></span>
+                </div>
+                <div class="col-sm-6">
+                    <TextInput @bind-Value="@editRecipeViewModel.Name"
+                               Placeholder="Please enter recipe name" />
+                    <ValidationMessage For="@(() => editRecipeViewModel.Name)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Content<span class="text-danger">*</span></span>
+                </div>
+                <div class="col-sm-6">
+                    <TextAreaInput @bind-Value="@editRecipeViewModel.Content"
+                                   Rows="5"
+                                   MaxLength="3000" />
+                    <ValidationMessage For="@(() => editRecipeViewModel.Content)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Description</span>
+                </div>
+                <div class="col-sm-6">
+                    <TextInput @bind-Value="@editRecipeViewModel.Description"
+                               Placeholder="Please enter recipe description" />
+                </div>
+            </div>
+
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideEditModalClick">Close</Button>
+        <Button Color="ButtonColor.Success" @onclick="EditRecipe">Save</Button>
+    </FooterTemplate>
+</Modal>
+
+<ConfirmDialog @ref="deleteDialog" />
 
 @code {
     private Grid<RecipeDto> grid = default!;
     private Modal modalCreate = default!;
     private Modal modalEdit = default!;
-    private RecipeViewModel createRecipeViewModel = new();
-    private EditContext editContext;
+    private ConfirmDialog deleteDialog = default!;
 
-    protected override void OnInitialized()
-    {
-        editContext = new EditContext(createRecipeViewModel);
-        base.OnInitialized();
-    }
+    private RecipeViewModel createRecipeViewModel;
+    private RecipeViewModel editRecipeViewModel;
+
+    private EditContext createContext;
+    private EditContext editContext;
 
     [Inject]
     private RecipeService recipeService { get; set; }
@@ -165,31 +220,85 @@
 
     private async Task ShowAddRecipeComponet()
     {
+        createRecipeViewModel = new();
+        createContext = new EditContext(createRecipeViewModel);
         await modalCreate.ShowAsync();
     }
 
-    public void HandleOnValidSubmit()
+    public async Task AddRecipe()
     {
         try
         {
-            // additional check
-            if (editContext?.Validate() == true)
+            if (createContext?.Validate() == true)
             {
-                // do something
-                // submit the form
-                Console.WriteLine("Form submitted successfully");
+                await recipeService.AddRecipe(
+                    new CreateRecipeDto
+                        {
+                            Name = createRecipeViewModel.Name,
+                            Content = createRecipeViewModel.Content,
+                            Description = createRecipeViewModel.Description
+                        });
+                await this.OnHideCreateModalClick();
             }
         }
         catch (Exception)
         {
-
             throw;
         }
+    }
 
+    public async Task EditRecipe()
+    {
+        try
+        {
+            if (editContext?.Validate() == true &&
+                !string.IsNullOrWhiteSpace(editRecipeViewModel.Id))
+            {
+                await recipeService.UpdateRecipeAsync(
+                    editRecipeViewModel.Id,
+                    editRecipeViewModel.ToDto());
+
+                await this.OnHideEditModalClick();
+            }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
     private async Task ShowEditRecipeComponet(EventArgs eventArgs, string id)
     {
-        throw new NotImplementedException();
+        RecipeDto recipe = await recipeService.GetRecipeAsync(id);
+        editRecipeViewModel = new();
+        editRecipeViewModel = recipe.ToViewModel();
+        editContext = new EditContext(editRecipeViewModel);
+        await modalEdit.ShowAsync();
+    }
+
+    private async Task ConfirmationDeleteRecipeAsync(EventArgs eventArgs, string id)
+    {
+        bool deleteConfirmation = await deleteDialog.ShowAsync(
+            title: "Are you sure you want to delete this?",
+            message1: "This will delete the recipe. Once deleted can not be rolled back.",
+            message2: "Do you want to proceed?");
+
+        if (deleteConfirmation)
+        {
+            await recipeService.DeleteRecipeAsync(id);
+            await grid.RefreshDataAsync();
+        }
+    }
+
+    private async Task OnHideCreateModalClick()
+    {
+        await modalCreate.HideAsync();
+        await grid.RefreshDataAsync();
+    }
+
+    private async Task OnHideEditModalClick()
+    {
+        await modalEdit.HideAsync();
+        await grid.RefreshDataAsync();
     }
 }
