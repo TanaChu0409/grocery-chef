@@ -114,10 +114,20 @@ public sealed class Recipe
             UpdatedAtUtc = UpdatedAtUtc,
             IngredientsWithUnit = _recipeIngredients
                 .Select(ri => GetIngredientNameWithUnit(
-                    ri.IngredientId, 
+                    ri.IngredientId,
                     ri.Amount,
                     ri.Unit))
-                .ToArray()
+                .ToArray(),
+            RecipeIngredientDetails = _recipeIngredients
+                .Select(GetRecipeIngredientDetails())
+                .ToList()
+        };
+
+    private Func<RecipeIngredient, RecipeIngredientDetail> GetRecipeIngredientDetails() => 
+        ri => new RecipeIngredientDetail
+        {
+            IngredientId = ri.IngredientId,
+            IngredientName = _ingredients.FirstOrDefault(i => i.Id == ri.IngredientId)?.Name ?? string.Empty
         };
 
     private string GetIngredientNameWithUnit(string ingredientId, decimal amount, RecipeUnit unit) =>

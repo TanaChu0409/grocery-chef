@@ -160,4 +160,61 @@ public sealed class RecipeService(
             throw;
         }
     }
+
+    public async Task<List<RecipeUnitDto>> GetRecipeUnit()
+    {
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    await inMemoryTokenStore.GetTokenAsync());
+
+            HttpResponseMessage response = await httpClient.GetAsync($"{RecipeUri}/units");
+
+            response.EnsureSuccessStatusCode();
+
+            List<RecipeUnitDto>? recipeUnits =
+                await response.Content.ReadFromJsonAsync<List<RecipeUnitDto>>();
+
+            return recipeUnits ?? [];
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+
+            return default;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public async Task UpsertRecipeIngredient(string id, List<RecipeIngredientDetail> recipeIngredients)
+    {
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(
+                "Bearer",
+                await inMemoryTokenStore.GetTokenAsync());
+
+            HttpResponseMessage response = await httpClient.PutAsJsonAsync(
+                $"{RecipeUri}/{id}/ingredients",
+                recipeIngredients);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+        }
+        catch
+        {
+            throw;
+        }
+    }
 }

@@ -147,7 +147,7 @@ public sealed class RecipeController(
     }
 
     [HttpGet("units")]
-    public ActionResult<Dictionary<int, string>> GetRecipeUnits()
+    public ActionResult<List<RecipeUnitDto>> GetRecipeUnits()
     {
         return Ok(RecipeUnitExtension.GetOptions());
     }

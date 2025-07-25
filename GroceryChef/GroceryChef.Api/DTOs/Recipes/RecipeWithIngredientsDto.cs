@@ -10,4 +10,11 @@ public sealed record RecipeWithIngredientsDto
     public required DateTime CreatedAtUtc { get; init; }
     public DateTime? UpdatedAtUtc { get; init; }
     public required string[] IngredientsWithUnit { get; init; }
+    public required List<RecipeIngredientDetail> RecipeIngredientDetails { get; init; }
+}
+
+public sealed record RecipeIngredientDetail
+{
+    public required string IngredientId { get; init; }
+    public required string IngredientName { get; init; } = string.Empty;
 }

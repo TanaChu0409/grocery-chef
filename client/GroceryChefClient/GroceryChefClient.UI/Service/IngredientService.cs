@@ -4,9 +4,11 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Reflection;
+using System.Threading;
 using System.Web;
 using GroceryChefClient.UI.Dtos.Common;
 using GroceryChefClient.UI.Dtos.Ingredients;
+using GroceryChefClient.UI.Dtos.Recipes;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace GroceryChefClient.UI.Service;
@@ -66,6 +68,46 @@ public sealed class IngredientService(
         }
     }
 
+    public async Task<List<RecipeIngredientDetailViewModel>> GetIngredientsForRecipeAsync()
+    {
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    await inMemoryTokenStore.GetTokenAsync());
+            HttpResponseMessage response = await httpClient.GetAsync(IngredientUri);
+
+            response.EnsureSuccessStatusCode();
+
+            PaginationResult<IngredientDto>? ingredientWithPagination =
+                await response.Content.ReadFromJsonAsync<PaginationResult<IngredientDto>>();
+
+            List<RecipeIngredientDetailViewModel> recipeIngredientDetails = ingredientWithPagination?.Items
+                .Select(ingredient => new RecipeIngredientDetailViewModel
+                {
+                    IngredientId = ingredient.Id,
+                    IngredientName = ingredient.Name,
+                    // todo
+                    Amount = 0,
+                    Unit = 0
+                })
+                .ToList() ?? [];
+
+            return recipeIngredientDetails;
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+
+            return [];
+        }
+        catch
+        {
+            throw;
+        }
+    }
     public async Task<IngredientDto> GetIngredientAsync(string id)
     {
         try

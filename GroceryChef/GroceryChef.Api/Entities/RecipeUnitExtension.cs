@@ -1,4 +1,6 @@
-﻿namespace GroceryChef.Api.Entities;
+﻿using GroceryChef.Api.DTOs.Recipes;
+
+namespace GroceryChef.Api.Entities;
 
 internal static class RecipeUnitExtension
 {
@@ -18,7 +20,11 @@ internal static class RecipeUnitExtension
             _ => string.Empty
         };
 
-    public static Dictionary<int, string> GetOptions() =>
-        Enum.GetValues<RecipeUnit>()
-            .ToDictionary(unit => (int)unit, unit => unit.GetUnitName());
+    public static List<RecipeUnitDto> GetOptions() =>
+        Enum.GetValues<RecipeUnit>().Select(x => new RecipeUnitDto
+        {
+            Key = (int)x,
+            Value = x.GetUnitName()
+        })
+        .ToList();
 }

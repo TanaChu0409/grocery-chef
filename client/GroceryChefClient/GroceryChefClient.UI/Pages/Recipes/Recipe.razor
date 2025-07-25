@@ -69,7 +69,8 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <Button Color="ButtonColor.Secondary">
+                        <Button Color="ButtonColor.Secondary"
+                                @onclick="((args) => ShowAddIngredient(args, context.Id))">
                             <Icon Name="IconName.Plus" />
                             Add ingredients
                         </Button>
@@ -178,6 +179,15 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-sm-4">
+                    Ingredients
+                </div>
+                <div class="col-sm-6">
+                    @editRecipeViewModel.IngredientsWithUnitDisplay
+                </div>
+            </div>
+
         </EditForm>
     </BodyTemplate>
     <FooterTemplate>
@@ -186,24 +196,131 @@
     </FooterTemplate>
 </Modal>
 
+<ConfirmDialog @ref="deleteDialog" />
+
 <Modal @ref="modalAddIngredient"
-       Title="Add Ingredients"
        Size="ModalSize.Large"
+       Title="Add Ingredient"
        UseStaticBackdrop="true"
        CloseOnEscape="false">
     <BodyTemplate>
-        <!--User Sortable List-->
+        <Card>
+            <CardBody>
+                <div class="row">
+                    <div class="col-sm-3">
+                        Ingredient
+                    </div>
+                    <div class="col-sm-9">
+                        <InputSelect @bind-Value="@createNewIngredient.IngredientId" class="form-control">
+                            <option value="">
+                                Select ingrdient ...
+                            </option>
+                            @foreach (var item in ingredients)
+                            {
+                                <option value="@item.IngredientId">
+                                    @item.IngredientName
+                                </option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        Ingredient Amount
+                    </div>
+                    <div class="col-sm-9">
+                        <NumberInput TValue="decimal"
+                                     Min="0"
+                                     @bind-Value="@createNewIngredient.Amount"
+                                     Placeholder="Please enter ingredient amoun" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        Ingredient Unit
+                    </div>
+                    <div class="col-sm-9">
+                        <InputSelect @bind-Value="@createNewIngredient.Unit" class="form-control">
+                            @foreach (var item in recipeUnits)
+                            {
+                                <option value="@item.Key">
+                                    @item.Value
+                                </option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+            </CardBody>
+            <CardFooter>
+                <!--Add button-->
+                <Button Color="ButtonColor.Warning" @onclick="InsertIngredientToGrid">
+                    <Icon Name="IconName.Plus" />
+                    Add
+                </Button>
+            </CardFooter>
+        </Card>
+        <!--Grid-->
+        <Card>
+            <CardBody>
+                <Grid @ref="recipeIngredientGrid"
+                      TItem="RecipeIngredientDetailViewModel"
+                      Class="table table-hover table-bordered table-striped"
+                      DataProvider="RecipeIngredientDataProvider"
+                      AllowFiltering="false"
+                      AllowPaging="false"
+                      AllowSorting="false"
+                      Responsive="true">
+
+                    <GridColumn TItem="RecipeIngredientDetailViewModel"
+                                HeaderText="Ingredient Name"
+                                PropertyName="IngredientName"
+                                SortString="ingredientName"
+                                SortKeySelector="@(item => item.IngredientName)">
+                        @context.IngredientName
+                    </GridColumn>
+
+                    <GridColumn TItem="RecipeIngredientDetailViewModel"
+                                HeaderText="Ingredient Amount"
+                                PropertyName="Amount"
+                                SortString="amount"
+                                SortKeySelector="@(item => item.Amount)">
+                        @context.Amount
+                    </GridColumn>
+
+                    <GridColumn TItem="RecipeIngredientDetailViewModel"
+                                HeaderText="Ingredient Unit"
+                                PropertyName="UnitName"
+                                SortString="unitName"
+                                SortKeySelector="@(item => item.UnitName)">
+                        @context.UnitName
+                    </GridColumn>
+
+                    <GridColumn TItem="RecipeIngredientDetailViewModel"
+                                HeaderText="Action"
+                                Filterable="false">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <Button Color="ButtonColor.Danger">
+                                    <Icon Name="IconName.Trash2Fill" />
+                                    Delete
+                                </Button>
+                            </div>
+                        </div>
+                    </GridColumn>
+                </Grid>
+            </CardBody>
+        </Card>
     </BodyTemplate>
     <FooterTemplate>
-        <Button Color="ButtonColor.Secondary">Close</Button>
-        <Button Color="ButtonColor.Success">Save</Button>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideAddIngredientModalClick">Close</Button>
+        <Button Color="ButtonColor.Success" >Save</Button>
     </FooterTemplate>
 </Modal>
 
-<ConfirmDialog @ref="deleteDialog" />
-
 @code {
     private Grid<RecipeDto> grid = default!;
+    private Grid<RecipeIngredientDetailViewModel> recipeIngredientGrid = default!;
+
     private Modal modalCreate = default!;
     private Modal modalEdit = default!;
     private Modal modalAddIngredient = default!;
@@ -216,6 +333,13 @@
     private EditContext createContext;
     private EditContext editContext;
 
+    private List<RecipeIngredientDetailViewModel> ingredients;
+    private RecipeIngredientDetailViewModel createNewIngredient;
+    private List<RecipeUnitDto> recipeUnits;
+    private List<RecipeIngredientDetailViewModel> selectedIngredients;
+
+    [Inject]
+    private IngredientService ingredientService { get; set; }
     [Inject]
     private RecipeService recipeService { get; set; }
 
@@ -257,7 +381,7 @@
         await modalCreate.ShowAsync();
     }
 
-    public async Task AddRecipe()
+    private async Task AddRecipe()
     {
         try
         {
@@ -279,7 +403,7 @@
         }
     }
 
-    public async Task EditRecipe()
+    private async Task EditRecipe()
     {
         try
         {
@@ -332,5 +456,58 @@
     {
         await modalEdit.HideAsync();
         await grid.RefreshDataAsync();
+    }
+
+    private async Task ShowAddIngredient(EventArgs eventArgs, string id)
+    {
+        ingredients = new();
+        recipeUnits = new();
+        createNewIngredient = new();
+        selectedIngredients.Clear();
+
+        selectedIngredients = (await recipeService.GetRecipeAsync(id))
+            .RecipeIngredientDetails
+            .Select(ri => ri.ToViewModel())
+            .ToList();
+
+        ingredients = await ingredientService.GetIngredientsForRecipeAsync();
+        recipeUnits = await recipeService.GetRecipeUnit();
+        if (modalAddIngredient is null)
+        {
+            // 可以改為顯示錯誤訊息或 log
+            throw new NullReferenceException("modalAddIngredient 尚未初始化，請確認 Modal 元件已正確渲染並設置 @ref。");
+        }
+        await modalAddIngredient.ShowAsync();
+    }
+
+    private async Task OnHideAddIngredientModalClick()
+    {
+        await modalAddIngredient.HideAsync();
+        await grid.RefreshDataAsync();
+    }
+
+    private async Task InsertIngredientToGrid()
+    {
+        RecipeIngredientDetailViewModel selectedItem = ingredients
+            .First(i => i.IngredientId == createNewIngredient.IngredientId);
+
+        createNewIngredient.IngredientName = selectedItem.IngredientName;
+        createNewIngredient.UnitName = recipeUnits
+            .FirstOrDefault(u => u.Key == createNewIngredient.Unit)?.Value ?? string.Empty;
+
+        selectedIngredients.Add(createNewIngredient);
+        createNewIngredient = new();
+        await recipeIngredientGrid.RefreshDataAsync();
+    }
+
+    private async Task<GridDataProviderResult<RecipeIngredientDetailViewModel>> RecipeIngredientDataProvider(
+        GridDataProviderRequest<RecipeIngredientDetailViewModel> request)
+    {
+        return await Task.FromResult(request.ApplyTo(selectedIngredients));
+    }
+
+    private async Task UpsertRecipeIngredient(string id)
+    {
+        
     }
 }
