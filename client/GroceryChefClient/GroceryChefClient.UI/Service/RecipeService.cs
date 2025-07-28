@@ -201,9 +201,23 @@ public sealed class RecipeService(
                 "Bearer",
                 await inMemoryTokenStore.GetTokenAsync());
 
+            var upsertDetails = recipeIngredients.Select(ri =>
+                new UpsertRecipeIngredientDetailDto
+                {
+                    IngredientId = ri.IngredientId,
+                    Amount = ri.Amount,
+                    Unit = ri.Unit
+                })
+                .ToList();
+
+            var upsertRecipeIngredientDto = new UpsertRecipeIngredientsDto
+            {
+                Details = upsertDetails
+            };
+
             HttpResponseMessage response = await httpClient.PutAsJsonAsync(
                 $"{RecipeUri}/{id}/ingredients",
-                recipeIngredients);
+                upsertRecipeIngredientDto);
 
             response.EnsureSuccessStatusCode();
         }

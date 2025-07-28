@@ -300,7 +300,8 @@
                                 Filterable="false">
                         <div class="row">
                             <div class="col-sm-12">
-                                <Button Color="ButtonColor.Danger">
+                                <Button Color="ButtonColor.Danger"
+                                        @onclick="(() => RemoveAddIngredientFromGrid(context.IngredientId))">
                                     <Icon Name="IconName.Trash2Fill" />
                                     Delete
                                 </Button>
@@ -313,7 +314,7 @@
     </BodyTemplate>
     <FooterTemplate>
         <Button Color="ButtonColor.Secondary" @onclick="OnHideAddIngredientModalClick">Close</Button>
-        <Button Color="ButtonColor.Success" >Save</Button>
+        <Button Color="ButtonColor.Success" @onclick="UpsertRecipeIngredient">Save</Button>
     </FooterTemplate>
 </Modal>
 
@@ -337,6 +338,7 @@
     private RecipeIngredientDetailViewModel createNewIngredient;
     private List<RecipeUnitDto> recipeUnits;
     private List<RecipeIngredientDetailViewModel> selectedIngredients;
+    private string? selectedRecipeId;
 
     [Inject]
     private IngredientService ingredientService { get; set; }
@@ -463,12 +465,15 @@
         ingredients = new();
         recipeUnits = new();
         createNewIngredient = new();
-        selectedIngredients.Clear();
+        selectedIngredients = [];
+        selectedRecipeId = string.Empty;
 
         selectedIngredients = (await recipeService.GetRecipeAsync(id))
             .RecipeIngredientDetails
             .Select(ri => ri.ToViewModel())
             .ToList();
+
+        selectedRecipeId = id;
 
         ingredients = await ingredientService.GetIngredientsForRecipeAsync();
         recipeUnits = await recipeService.GetRecipeUnit();
@@ -506,8 +511,28 @@
         return await Task.FromResult(request.ApplyTo(selectedIngredients));
     }
 
-    private async Task UpsertRecipeIngredient(string id)
+    private async Task UpsertRecipeIngredient()
     {
-        
+        if (string.IsNullOrWhiteSpace(selectedRecipeId))
+        {
+            throw new NullReferenceException($"{nameof(selectedRecipeId)} isn't assign");
+        }
+
+        await recipeService.UpsertRecipeIngredient(
+            selectedRecipeId,
+            selectedIngredients.Select(i => i.ToDto()).ToList());
+
+        await modalAddIngredient.HideAsync();
+    }
+
+    private void RemoveAddIngredientFromGrid(string ingredientId)
+    {
+        RecipeIngredientDetailViewModel? ingredientToRemove = selectedIngredients
+            .FirstOrDefault(i => i.IngredientId == ingredientId);
+        if (ingredientToRemove is not null)
+        {
+            selectedIngredients.Remove(ingredientToRemove);
+        }
+        recipeIngredientGrid.RefreshDataAsync();
     }
 }

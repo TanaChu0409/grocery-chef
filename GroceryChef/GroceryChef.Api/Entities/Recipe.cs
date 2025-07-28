@@ -127,7 +127,10 @@ public sealed class Recipe
         ri => new RecipeIngredientDetail
         {
             IngredientId = ri.IngredientId,
-            IngredientName = _ingredients.FirstOrDefault(i => i.Id == ri.IngredientId)?.Name ?? string.Empty
+            IngredientName = _ingredients.FirstOrDefault(i => i.Id == ri.IngredientId)?.Name ?? string.Empty,
+            Amount = ri.Amount,
+            Unit = (int)ri.Unit,
+            UnitName = RecipeUnitExtension.GetUnitName(ri.Unit)
         };
 
     private string GetIngredientNameWithUnit(string ingredientId, decimal amount, RecipeUnit unit) =>

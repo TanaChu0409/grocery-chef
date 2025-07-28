@@ -17,4 +17,7 @@ public sealed record RecipeIngredientDetail
 {
     public required string IngredientId { get; init; }
     public required string IngredientName { get; init; } = string.Empty;
+    public required decimal Amount { get; init; }
+    public required int Unit { get; init; }
+    public required string UnitName { get; init; } = string.Empty;
 }

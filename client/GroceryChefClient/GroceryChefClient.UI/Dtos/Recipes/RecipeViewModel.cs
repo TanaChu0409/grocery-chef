@@ -34,6 +34,7 @@ public sealed class RecipeIngredientDetailViewModel
             IngredientId = IngredientId,
             IngredientName = IngredientName,
             Amount = Amount,
-            Unit = Unit
+            Unit = Unit,
+            UnitName = UnitName
         };
 }
