@@ -13,4 +13,6 @@ public enum RecipeUnit
     Liter = 8,
     Milliliter = 9,
     AppropriateAmount = 10,
+    Stalk = 11,
+    Bag = 12,
 }

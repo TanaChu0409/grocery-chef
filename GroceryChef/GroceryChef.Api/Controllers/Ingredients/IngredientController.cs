@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GroceryChef.Api.Controllers.Ingredients;
 
 [EnableRateLimiting("default")]
-[ResponseCache(Duration = 120)]
+//[ResponseCache(Duration = 120)]
 [Authorize(Roles = Roles.Member)]
 [ApiController]
 [Route("ingredients")]

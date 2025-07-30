@@ -2,6 +2,7 @@
 
 public sealed record RecipeDto
 {
+    private const string IngredientSeparator = "\n";
     public required string Id { get; init; }
     public required string Name { get; init; } = string.Empty;
     public required string Content { get; init; } = string.Empty;
@@ -19,7 +20,7 @@ public sealed record RecipeDto
             Name = Name,
             Content = Content,
             Description = Description,
-            IngredientsWithUnitDisplay = string.Join("<br/>", IngredientsWithUnit) ?? string.Empty
+            IngredientsWithUnitDisplay = string.Join(IngredientSeparator, IngredientsWithUnit) ?? string.Empty
         };
 }
 

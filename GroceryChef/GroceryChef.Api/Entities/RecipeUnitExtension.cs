@@ -17,6 +17,8 @@ internal static class RecipeUnitExtension
             RecipeUnit.Liter => "公升",
             RecipeUnit.Milliliter => "毫升",
             RecipeUnit.AppropriateAmount => "適量",
+            RecipeUnit.Stalk => "根",
+            RecipeUnit.Bag => "包",
             _ => string.Empty
         };
 

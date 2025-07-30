@@ -16,7 +16,7 @@ public sealed class RecipeService(
 {
     private const string RecipeUri = "recipes";
 
-    public async Task<List<RecipeDto>> GetRecipes(
+    public async Task<PaginationResult<RecipeDto>> GetRecipes(
         RecipeQueryRequest queryRequest,
         CancellationToken cancellationToken)
     {
@@ -36,14 +36,14 @@ public sealed class RecipeService(
             PaginationResult<RecipeDto> recipeWithPagination =
                 await response.Content.ReadFromJsonAsync<PaginationResult<RecipeDto>>(cancellationToken);
 
-            return recipeWithPagination?.Items ?? [];
+            return recipeWithPagination;
         }
         catch (HttpRequestException httpEx)
             when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
         {
             ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
 
-            return [];
+            return new();
         }
         catch
         {

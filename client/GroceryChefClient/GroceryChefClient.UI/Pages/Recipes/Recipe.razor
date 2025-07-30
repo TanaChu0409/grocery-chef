@@ -371,8 +371,8 @@
         return await Task.FromResult(
             new GridDataProviderResult<RecipeDto>
                 {
-                    Data = result,
-                    TotalCount = result.Count
+                    Data = result.Items,
+                    TotalCount = result.TotalCount
                 });
     }
 

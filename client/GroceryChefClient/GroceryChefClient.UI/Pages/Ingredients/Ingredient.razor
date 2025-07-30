@@ -46,7 +46,7 @@
                         SortString="isAllergy"
                         SortKeySelector="@(item => item.IsAllergy)"
                         FilterTextboxWidth="80">
-                @context.IsAllergy
+                @(context.IsAllergy ? "Yes" : "No")
             </GridColumn>
             <GridColumn TItem="IngredientDto"
                         HeaderText="Create Time"
@@ -200,7 +200,7 @@
             direction = request.Sorting.FirstOrDefault()!.SortDirection.GetSortDirectionString();
         }
 
-        List<IngredientDto> result = await ingredientService.GetIngredients(
+        PaginationResult<IngredientDto> result = await ingredientService.GetIngredients(
             new IngredientQueryRequest
                 {
                     Page = request.PageNumber,
@@ -213,20 +213,21 @@
         return await Task.FromResult(
             new GridDataProviderResult<IngredientDto>
                 {
-                    Data = result,
-                    TotalCount = result.Count
+                    Data = result.Items,
+                    TotalCount = result.TotalCount
                 });
     }
 
     private async Task ShowAddIngredientComponet()
     {
+        createIngredientViewModel = new();
         await modalCreate.ShowAsync();
     }
 
     private async Task OnHideCreateModalClick()
     {
-        await modalCreate.HideAsync();
         await grid.RefreshDataAsync();
+        await modalCreate.HideAsync();
     }
 
     private async Task AddIngredientAsync()
@@ -258,8 +259,8 @@
 
     private async Task OnHideEditModalClick()
     {
-        await modalEdit.HideAsync();
         await grid.RefreshDataAsync();
+        await modalEdit.HideAsync();
     }
 
     private async Task EditIngredientAsync()
