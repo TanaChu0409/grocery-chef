@@ -81,4 +81,12 @@ public sealed class AuthService(
         ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
         httpClient.DefaultRequestHeaders.Authorization = null;
     } 
+
+    public async Task RegisterAsync(RegisterDto registerDto)
+    {
+        HttpResponseMessage response = await httpClient.PostAsJsonAsync(
+            $"{AuthUri}/register",
+            registerDto);
+        response.EnsureSuccessStatusCode();
+    }
 }

@@ -1,68 +1,79 @@
 ﻿@page "/Login"
 @inject NavigationManager navigation
-@inject AuthService authService
 
-<div>
-    <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <InputText id="username" class="form-control" @bind-Value="loginModel.Email" />
-            <ValidationMessage For="@(() => loginModel.Email)" />
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <InputText id="password" type="password" class="form-control" @bind-Value="loginModel.Password" />
-            <ValidationMessage For="@(() => loginModel.Password)" />
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="alert alert-danger mt-2">@errorMessage</div>
-        }
-    </EditForm>
-</div>
+<Card>
+    <CardBody>
+        <EditForm EditContext="@loginContext" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <InputText id="username" class="form-control" @bind-Value="loginModel.Email" />
+                <ValidationMessage For="@(() => loginModel.Email)" />
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <InputText id="password" type="password" class="form-control" @bind-Value="loginModel.Password" />
+                <ValidationMessage For="@(() => loginModel.Password)" />
+            </div>
+            <Button Color="ButtonColor.Secondary" @onclick="Back">Back</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Login</Button>
+        </EditForm>
+    </CardBody>
+</Card>
 
 @code {
-    private LoginModel loginModel = new();
-    private string? errorMessage;
+    private EditContext loginContext;
+    private LoginViewModel loginModel = new();
+
+    [Inject]
+    private ModalService modalService { get; set; } = default!;
+    [Inject]
+    private AuthService authService { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        loginModel = new();
+        loginContext = new EditContext(loginModel);
+        base.OnInitialized();
+    }
 
     private async Task HandleLogin()
     {
-        if (string.IsNullOrWhiteSpace(loginModel.Email))
+        if (loginContext?.Validate() != true)
         {
-            errorMessage = $"Email can't be empty";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(loginModel.Password))
-        {
-            errorMessage = $"Password can't be empty";
             return;
         }
 
         bool isLogin = await authService.LoginAsync(new Dtos.Auth.LoginUserDto
-            {
-                Email = loginModel.Email,
-                Password = loginModel.Password
-            });
+        {
+            Email = loginModel.Email,
+            Password = loginModel.Password
+        });
 
         if (!isLogin)
         {
-            errorMessage = "Login fail, please try again.";
+            await ShowErrorModalAsync("Login fail, please try again.");
             return;
         }
 
-        errorMessage = string.Empty;
         navigation.NavigateTo("/");
     }
 
-    public class LoginModel
+    private async Task ShowErrorModalAsync(string errorMessage)
     {
-        [Required]
-        public string? Email { get; set; }
-        [Required]
-        public string? Password { get; set; }
+        var modalOptions = new ModalOption
+        {
+            Title = "Login Error",
+            Message = errorMessage,
+            Type = ModalType.Danger
+        };
+
+        await modalService.ShowAsync(modalOptions);
+    }
+    
+    private void Back()
+    {
+        navigation.NavigateTo("/");
     }
 }

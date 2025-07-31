@@ -1,0 +1,122 @@
+﻿@page "/Register"
+@using GroceryChefClient.UI.Dtos.Auth
+
+<Card>
+    <CardBody>
+        <EditForm EditContext="@registerContext"
+                  OnValidSubmit="RegisterAsync">
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Email<span class="text-danger">*</span></span>
+                </div>
+                <div class="col-sm-6">
+                    <TextInput @bind-Value="@registerViewModel.Email"
+                               Placeholder="Please enter your email" />
+                    <ValidationMessage For="@(() => registerViewModel.Email)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Name<span class="text-danger">*</span></span>
+                </div>
+                <div class="col-sm-6">
+                    <TextInput @bind-Value="@registerViewModel.Name"
+                               Placeholder="Please enter your name" />
+                    <ValidationMessage For="@(() => registerViewModel.Name)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Password<span class="text-danger">*</span></span>
+                </div>
+                <div class="col-sm-6">
+                    <PasswordInput @bind-Value="@registerViewModel.Password" />
+                    <ValidationMessage For="@(() => registerViewModel.Password)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Comfrim Password<span class="text-danger">*</span></span>
+                </div>
+                <div class="col-sm-6">
+                    <PasswordInput @bind-Value="@registerViewModel.ConfirmPassword" />
+                    <ValidationMessage For="@(() => registerViewModel.ConfirmPassword)" />
+                </div>
+            </div>
+            <Button Color="ButtonColor.Secondary" @onclick="Back">Back</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success">Register</Button>
+        </EditForm>
+    </CardBody>
+</Card>
+
+
+@code {
+    private EditContext registerContext;
+
+    private RegisterViewModel registerViewModel;
+
+    [Inject]
+    private AuthService authService { get; set; } = default!;
+    [Inject]
+    private ModalService modalService { get; set; } = default!;
+    [Inject]
+    private NavigationManager navigationManager { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        registerViewModel = new();
+        registerContext = new EditContext(registerViewModel);
+        base.OnInitialized();
+    }
+
+    private async Task RegisterAsync()
+    {
+        try
+        {
+            if (registerContext?.Validate() != true)
+            {
+                return;
+            }
+
+            if (!registerViewModel.IsPasswordConfirmed)
+            {
+                await ShowErrorModalAsync("Password not same!");
+                return;
+            }
+
+            await authService.RegisterAsync(registerViewModel.ToDto());
+            var modalOptions = new ModalOption
+            {
+                Title = "Registration Successful",
+                Message = "Your account has been successfully created. You can now log in to your account.",
+                Type = ModalType.Success
+            };
+
+            await modalService.ShowAsync(modalOptions);
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorModalAsync(ex.Message);
+            throw;
+        }
+    }
+
+    private async Task ShowErrorModalAsync(string errorMessage)
+    {
+        var modalOptions = new ModalOption
+            {
+                Title = "Registration Error",
+                Message = errorMessage,
+                Type = ModalType.Danger
+            };
+
+        await modalService.ShowAsync(modalOptions);
+    }
+
+    private void Back()
+    {
+        navigationManager.NavigateTo("/");
+    }
+}
