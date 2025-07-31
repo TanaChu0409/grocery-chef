@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace GroceryChef.Api.Controllers.Carts;
 
 [EnableRateLimiting("default")]
-[ResponseCache(Duration = 120)]
+//[ResponseCache(Duration = 120)]
 [Authorize(Roles = Roles.Member)]
 [ApiController]
 [Route("carts")]

@@ -29,6 +29,7 @@ builder.Services.AddTransient<AuthService>();
 builder.Services.AddTransient<IngredientService>();
 builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<RecipeService>();
+builder.Services.AddTransient<CartService>();
 
 builder.Services.AddBlazorBootstrap();
 

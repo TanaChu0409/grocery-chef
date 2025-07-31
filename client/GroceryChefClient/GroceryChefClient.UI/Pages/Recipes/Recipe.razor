@@ -198,6 +198,7 @@
 
 <ConfirmDialog @ref="deleteDialog" />
 
+<!--Add ingredients-->
 <Modal @ref="modalAddIngredient"
        Size="ModalSize.Large"
        Title="Add Ingredient"
@@ -358,7 +359,7 @@
             direction = request.Sorting.FirstOrDefault()!.SortDirection.GetSortDirectionString();
         }
 
-        var result = await recipeService.GetRecipes(
+        PaginationResult<RecipeDto> result = await recipeService.GetRecipes(
             new RecipeQueryRequest
                 {
                     Page = request.PageNumber,

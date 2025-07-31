@@ -1,0 +1,113 @@
+﻿@page "/carts"
+@attribute [Authorize]
+
+<h3>Cart</h3>
+<Card>
+    <CardHeader>
+        <div class="row">
+            <div class="col-sm-2">
+                <Button Color="ButtonColor.Warning">
+                    <Icon Name="IconName.Plus" />
+                    Add
+                </Button>
+            </div>
+        </div>
+    </CardHeader>
+    <CardBody>
+        <Grid @ref="@grid"
+              TItem="CartDto"
+              Class="table table-hover table-bordered table-striped"
+              DataProvider="CartDataProvider"
+              AllowFiltering="true"
+              AllowPaging="true"
+              AllowSorting="true"
+              Responsive="true"
+              EmptyText="All empty! Time to restock!">
+
+            <GridColumn TItem="CartDto"
+                        HeaderText="Name"
+                        PropertyName="Name"
+                        SortString="name"
+                        SortKeySelector="@(item => item.Name)">
+                @context.Name
+            </GridColumn>
+
+            <GridColumn TItem="CartDto"
+                        HeaderText="Create Time"
+                        PropertyName="CreatedAtUtc"
+                        SortString="createdAtUtc"
+                        SortKeySelector="@(item => item.CreatedAtUtc)">
+                @context.CreatedAtUtc.ToLocalTime()
+            </GridColumn>
+
+            <GridColumn TItem="CartDto"
+                        HeaderText="Update Time"
+                        PropertyName="UpdatedAtUtc"
+                        SortString="updatedAtUtc"
+                        SortKeySelector="@(item => item.UpdatedAtUtc)">
+                @context.UpdatedAtUtc?.ToLocalTime()
+            </GridColumn>
+
+            <GridColumn TItem="CartDto"
+                        HeaderText="Action"
+                        Filterable="false">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <Button Color="ButtonColor.Primary">
+                            <Icon Name="IconName.PencilFill" />
+                            Edit
+                        </Button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <Button Color="ButtonColor.Danger">
+                            <Icon Name="IconName.Trash2Fill" />
+                            Delete
+                        </Button>
+                    </div>
+                </div>
+            </GridColumn>
+        </Grid>
+    </CardBody>
+</Card>
+
+
+
+@code {
+    private Grid<CartDto> grid = default!;
+
+    [Inject]
+    private CartService cartService { get; set; }
+
+    private async Task<GridDataProviderResult<CartDto>> CartDataProvider(
+        GridDataProviderRequest<CartDto> request)
+    {
+        string sorting = string.Empty;
+        string direction = string.Empty;
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            sorting = string.Join(
+                ',',
+                request.Sorting.Select(s => s.SortString).ToArray());
+            direction = request.Sorting.FirstOrDefault()!.SortDirection.GetSortDirectionString();
+        }
+
+        PaginationResult<CartDto> result = await cartService.GetCarts(
+            new CartQueryRequest
+                {
+                    Page = request.PageNumber,
+                    PageSize = request.PageSize,
+                    Sort = $"{sorting} {direction}",
+                    Filters = request.Filters
+                },
+            request.CancellationToken);
+
+        return await Task.FromResult(
+            new GridDataProviderResult<CartDto>
+                {
+                    Data = result.Items,
+                    TotalCount = result.TotalCount
+                });
+    }
+}
