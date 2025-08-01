@@ -6,7 +6,7 @@
     <CardHeader>
         <div class="row">
             <div class="col-sm-2">
-                <Button Color="ButtonColor.Warning">
+                <Button Color="ButtonColor.Warning" @onclick="ShowAddCartModalComponet">
                     <Icon Name="IconName.Plus" />
                     Add
                 </Button>
@@ -53,7 +53,8 @@
                         Filterable="false">
                 <div class="row">
                     <div class="col-sm-12">
-                        <Button Color="ButtonColor.Primary">
+                        <Button Color="ButtonColor.Primary"
+                                @onclick="(() => ShowEditCartModalComponet(context.Id))">
                             <Icon Name="IconName.PencilFill" />
                             Edit
                         </Button>
@@ -61,7 +62,8 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <Button Color="ButtonColor.Danger">
+                        <Button Color="ButtonColor.Danger"
+                                @onclick="(() => DeleteCart(context.Id))">
                             <Icon Name="IconName.Trash2Fill" />
                             Delete
                         </Button>
@@ -72,16 +74,94 @@
     </CardBody>
 </Card>
 
+<!--Add-->
+<Modal @ref="createModal"
+       Title="Create cart"
+       Size="ModalSize.Large"
+       UseStaticBackdrop="true"
+       CloseOnEscape="false">
+    <BodyTemplate>
+        <EditForm EditContext="@createContext" OnValidSubmit="AddCart">
+            <DataAnnotationsValidator />
 
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Name<span class="text-danger">*</span></span>
+                </div>
+                <div class="col-sm-6">
+                    <TextInput @bind-Value="@createCartViewModel.Name"
+                               Placeholder="Please enter cart name" />
+                    <ValidationMessage For="@(() => createCartViewModel.Name)" />
+                </div>
+            </div>
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="CloseCreateModalAsync">
+            <Icon Name="IconName.X" />
+            Close
+        </Button>
+        <Button Color="ButtonColor.Success" @onclick="AddCart">
+            <Icon Name="IconName.Floppy" />
+            Save
+        </Button>
+    </FooterTemplate>
+</Modal>
+
+<!--Edit-->
+<Modal @ref="editModal"
+       Title="Edit cart"
+       Size="ModalSize.Large"
+       UseStaticBackdrop="true"
+       CloseOnEscape="false">
+    <BodyTemplate>
+        <EditForm EditContext="@editContext" OnValidSubmit="EditCart">
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Name<span class="text-danger">*</span></span>
+                </div>
+                <div class="col-sm-6">
+                    <TextInput @bind-Value="@editCartViewModel.Name"
+                               Placeholder="Please enter cart name" />
+                    <ValidationMessage For="@(() => editCartViewModel.Name)" />
+                </div>
+            </div>
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="CloseEditModalAsync">
+            <Icon Name="IconName.X" />
+            Close
+        </Button>
+        <Button Color="ButtonColor.Success" @onclick="EditCart">
+            <Icon Name="IconName.Floppy" />
+            Save
+        </Button>
+    </FooterTemplate>
+</Modal>
+
+<ConfirmDialog @ref="deleteDialog" />
 
 @code {
     private Grid<CartDto> grid = default!;
+    private Modal createModal = default!;
+    private Modal editModal = default!;
+    private ConfirmDialog deleteDialog = default!;
+
+    private EditContext createContext;
+    private EditContext editContext;
+
+    private CreateCartViewModel createCartViewModel;
+    private EditCartViewModel editCartViewModel;
 
     [Inject]
     private CartService cartService { get; set; }
+    [Inject]
+    private ModalService modalService { get; set; } = default!;
 
-    private async Task<GridDataProviderResult<CartDto>> CartDataProvider(
-        GridDataProviderRequest<CartDto> request)
+    private async Task<GridDataProviderResult<CartDto>> CartDataProvider(GridDataProviderRequest<CartDto> request)
     {
         string sorting = string.Empty;
         string direction = string.Empty;
@@ -109,5 +189,127 @@
                     Data = result.Items,
                     TotalCount = result.TotalCount
                 });
+    }
+
+    private async Task ShowAddCartModalComponet()
+    {
+        createCartViewModel = new CreateCartViewModel();
+        createContext = new EditContext(createCartViewModel);
+        await createModal.ShowAsync();
+    }
+
+    private async Task AddCart()
+    {
+        try
+        {
+            if (createContext?.Validate() != true)
+            {
+                return;
+            }
+
+            await cartService.AddCart(createCartViewModel.ToDto());
+            await CloseCreateModalAsync();
+            await ShowSaveSuccessModalAsync();
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorModalAsync("Add Cart Error", ex.Message);
+        }
+    }
+
+    private async Task CloseCreateModalAsync()
+    {
+        await createModal.HideAsync();
+        await grid.RefreshDataAsync();
+    }
+
+    private async Task ShowSaveSuccessModalAsync()
+    {
+        var modalOptions = new ModalOption
+            {
+                Title = "Save Successful",
+                Message = "Your cart has been successfully saved.",
+                Type = ModalType.Success
+            };
+
+        await modalService.ShowAsync(modalOptions);
+    }
+
+    private async Task ShowErrorModalAsync(string title, string errorMessage)
+    {
+        var modalOptions = new ModalOption
+            {
+                Title = title,
+                Message = errorMessage,
+                Type = ModalType.Danger
+            };
+
+        await modalService.ShowAsync(modalOptions);
+    }
+
+    private async Task ShowEditCartModalComponet(string id)
+    {
+        editCartViewModel = (await cartService.GetCart(id)).ToViewModel();
+        editContext = new EditContext(editCartViewModel);
+        await editModal.ShowAsync();
+    }
+
+    private async Task EditCart()
+    {
+        try
+        {
+            if (editContext?.Validate() != true)
+            {
+                return;
+            }
+
+            await cartService.EditCart(editCartViewModel.ToDto());
+            await CloseEditModalAsync();
+            await ShowSaveSuccessModalAsync();
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorModalAsync("Edit Cart Error", ex.Message);
+        }
+    }
+
+    private async Task CloseEditModalAsync()
+    {
+        await editModal.HideAsync();
+        await grid.RefreshDataAsync();
+    }
+
+    private async Task DeleteCart(string id)
+    {
+        try
+        {
+            bool deleteConfirmation = await deleteDialog.ShowAsync(
+           title: "Are you sure you want to delete this?",
+           message1: "This will delete the cart. Once deleted can not be rolled back.",
+           message2: "Do you want to proceed?");
+
+            if (deleteConfirmation)
+            {
+                await cartService.DeleteCart(id);
+                await grid.RefreshDataAsync();
+                await ShowDeleteSuccessModalAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorModalAsync("Delete Cart Error", ex.Message);
+        }
+    }
+
+    private async Task ShowDeleteSuccessModalAsync()
+    {
+        var modalOptions = new ModalOption
+            {
+                Title = "Delete Successful",
+                Message = "Your cart has been successfully deleted.",
+                Type = ModalType.Success
+            };
+
+        await modalService.ShowAsync(modalOptions);
     }
 }

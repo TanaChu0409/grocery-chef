@@ -61,7 +61,7 @@ public sealed class RecipeService(
                 await inMemoryTokenStore.GetTokenAsync());
 
             HttpResponseMessage response = await httpClient.PostAsJsonAsync(
-                $"{RecipeUri}",
+                RecipeUri,
                 createRecipe);
 
             response.EnsureSuccessStatusCode();

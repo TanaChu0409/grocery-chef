@@ -8,6 +8,7 @@ using GroceryChefClient.UI.Dtos.Recipes;
 using GroceryChefClient.UI.Extensions;
 using Microsoft.AspNetCore.Components.Authorization;
 using GroceryChefClient.UI.Pages.Carts;
+using System.Threading;
 
 namespace GroceryChefClient.UI.Service;
 
@@ -46,6 +47,112 @@ public sealed class CartService(
             ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
 
             return new();
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public async Task AddCart(CreateCartDto createCartDto)
+    {
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    await inMemoryTokenStore.GetTokenAsync());
+
+            HttpResponseMessage response = await httpClient.PostAsJsonAsync(
+                CartUri,
+                createCartDto);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public async Task<EditCartDto> GetCart(string id)
+    {
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    await inMemoryTokenStore.GetTokenAsync());
+            HttpResponseMessage response = await httpClient.GetAsync($"{CartUri}/{id}");
+
+            response.EnsureSuccessStatusCode();
+
+            EditCartDto cart =
+                await response.Content.ReadFromJsonAsync<EditCartDto>();
+
+            return cart;
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+
+            throw;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public async Task EditCart(EditCartDto editCartDto)
+    {
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    await inMemoryTokenStore.GetTokenAsync());
+
+            HttpResponseMessage response = await httpClient.PutAsJsonAsync(
+                $"{CartUri}/{editCartDto.Id}",
+                editCartDto);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public async Task DeleteCart(string id)
+    {
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    await inMemoryTokenStore.GetTokenAsync());
+
+            HttpResponseMessage response = await httpClient.DeleteAsync($"{CartUri}/{id}");
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
         }
         catch
         {
