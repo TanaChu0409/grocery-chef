@@ -159,4 +159,81 @@ public sealed class CartService(
             throw;
         }
     }
+
+    public async Task<List<CartDetailOptions>> GetCartOptions()
+    {
+        try
+        {
+            string uri = $"{CartUri}";
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    await inMemoryTokenStore.GetTokenAsync());
+            HttpResponseMessage response = await httpClient.GetAsync(uri);
+
+            response.EnsureSuccessStatusCode();
+
+            PaginationResult<CartDto> cartResultWithPagination =
+                await response.Content.ReadFromJsonAsync<PaginationResult<CartDto>>();
+
+            return cartResultWithPagination?.Items
+                .Select(cart =>
+                    new CartDetailOptions
+                    {
+                        CartId = cart.Id,
+                        CartName = cart.Name
+                    })
+                .ToList() ?? [];
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+
+            return [];
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public async Task<List<CartDetailGridViewModel>> GetCartIngredients(string cartId)
+    {
+        try
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    await inMemoryTokenStore.GetTokenAsync());
+            HttpResponseMessage response = await httpClient.GetAsync($"{CartUri}/{cartId}");
+
+            response.EnsureSuccessStatusCode();
+
+            CartWithIngredientsDto cartWithIngredientDto =
+                await response.Content.ReadFromJsonAsync<CartWithIngredientsDto>();
+
+            List<CartDetailGridViewModel> cartDetailGridViewModel = cartWithIngredientDto?.Ingredients
+                .Select(ingredient => new CartDetailGridViewModel
+                {
+                    IngredientId = ingredient.IngredientId,
+                    Name = ingredient.Name,
+                    IsBought = ingredient.IsBought
+                })
+                .ToList() ?? [];
+
+            return cartDetailGridViewModel;
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+
+            throw;
+        }
+        catch
+        {
+            throw;
+        }
+    }
 }

@@ -1,0 +1,116 @@
+﻿@page "/carts/details"
+@attribute [Authorize]
+<h3>CartDetails</h3>
+<!--下拉選單，選擇購物清單-->
+<!--Grid呈現目前的內容-->
+<!--Grid提供刪除button或已購買的checkbox-->
+<!--提供一個新增食材的按鈕-->
+<Card>
+    <CardHeader>
+        <div class="row">
+            <div class="col-sm-3">
+                Carts<span class="text-danger">*</span>
+            </div>
+            <div class="col-sm-6">
+                <InputSelect @bind-Value="@cartDetailViewModel.CartId"
+                             class="form-control"
+                             @onchange="CartOptionsOnChanged">
+                    @foreach (var item in cartDetailViewModel.Options)
+                    {
+                        <option value="@item.CartId">
+                            @item.CartName
+                        </option>
+                    }
+                </InputSelect>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <Button Type="ButtonType.Button" Color="ButtonColor.Warning">
+                    <Icon Name="IconName.Plus" />
+                    Add Ingredient
+                </Button>
+                <Button Type="ButtonType.Button"
+                        Color="ButtonColor.Primary"
+                        Disabled="true"
+                        TooltipTitle="Coming soon..."
+                        TooltipPlacement="TooltipPlacement.Top">
+                    <Icon Name="IconName.BoxArrowInDown" />
+                    Import from recipe
+                </Button>
+            </div>
+        </div>
+    </CardHeader>
+    <CardBody>
+        <!--Grid use client side not server side -->
+        <Grid @ref="grid"
+              TItem="CartDetailGridViewModel"
+              Class="table table-hover table-bordered table-striped"
+              DataProvider="CartDetailDataProvider"
+              AllowFiltering="false"
+              AllowPaging="true"
+              AllowSorting="false">
+            <GridColumn TItem="CartDetailGridViewModel"
+                        HeaderText="Name"
+                        PropertyName="Name">
+                @context.Name
+            </GridColumn>
+            <GridColumn TItem="CartDetailGridViewModel"
+                        PropertyName="IsBought">
+                <ChildContent>
+                    <Switch @bind-Value="@context.IsBought" />
+                </ChildContent>
+            </GridColumn>
+        </Grid>
+    </CardBody>
+</Card>
+
+@code {
+    private CartDetailViewModel cartDetailViewModel = default!;
+
+    private Grid<CartDetailGridViewModel> grid = default!;
+    private List<CartDetailGridViewModel> gridDataSource = [];
+
+    [Inject]
+    private CartService cartService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        cartDetailViewModel = new();
+        cartDetailViewModel.Options = await cartService.GetCartOptions();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task CartOptionsOnChanged(ChangeEventArgs changeEventArgs)
+    {
+        if (changeEventArgs.Value is string cartId)
+        {
+            // searching cart ingrdient details
+            var cartWithIngredients = await cartService.GetCartIngredients(cartId);
+            gridDataSource.AddRange(cartWithIngredients);
+            await grid.RefreshDataAsync();
+        }
+    }
+
+    private async Task<GridDataProviderResult<CartDetailGridViewModel>> CartDetailDataProvider(
+        GridDataProviderRequest<CartDetailGridViewModel> request)
+    {
+        string sorting = string.Empty;
+        string direction = string.Empty;
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            sorting = string.Join(
+                ',',
+                request.Sorting.Select(s => s.SortString).ToArray());
+            direction = request.Sorting.FirstOrDefault()!.SortDirection.GetSortDirectionString();
+        }
+
+        return await Task.FromResult(
+            new GridDataProviderResult<CartDetailGridViewModel>()
+                {
+                    Data = gridDataSource,
+                    TotalCount = gridDataSource.Count
+                });
+    }
+}
