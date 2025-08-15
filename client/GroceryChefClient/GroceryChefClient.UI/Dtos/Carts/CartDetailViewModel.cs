@@ -4,10 +4,9 @@ namespace GroceryChefClient.UI.Dtos.Carts;
 
 public sealed class CartDetailViewModel
 {
-    [Required(ErrorMessage = "You must choose a cart to view details.")]
-    public string CartId { get; set; }
+    public string? CartId { get; set; }
 
-    public List<CartDetailOptions> Options { get; set; } = new();
+    public List<CartDetailOptions> Options { get; set; } = [];
 }
 
 public sealed class CartDetailOptions
