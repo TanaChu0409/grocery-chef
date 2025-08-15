@@ -68,33 +68,29 @@ public sealed class IngredientService(
         }
     }
 
-    public async Task<PaginationResult<IngredientDto>> GetIngredientsWithoutQuery(
-        int page,
-        int pageSize,
-        CancellationToken cancellationToken)
+    public async Task<List<IngredientDto>> GetIngredientsForOptions()
     {
         try
         {
-            string uri = $"{IngredientUri}?{nameof(page)}={page}&{nameof(pageSize)}={pageSize}";
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(
                     "Bearer",
                     await inMemoryTokenStore.GetTokenAsync());
-            HttpResponseMessage response = await httpClient.GetAsync(uri, cancellationToken);
+            HttpResponseMessage response = await httpClient.GetAsync(IngredientUri);
 
             response.EnsureSuccessStatusCode();
 
             PaginationResult<IngredientDto>? ingredientWithPagination =
-                await response.Content.ReadFromJsonAsync<PaginationResult<IngredientDto>>(cancellationToken);
+                await response.Content.ReadFromJsonAsync<PaginationResult<IngredientDto>>();
 
-            return ingredientWithPagination;
+            return ingredientWithPagination?.Items ?? [];
         }
         catch (HttpRequestException httpEx)
             when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
         {
             ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
 
-            return new();
+            return [];
         }
         catch
         {

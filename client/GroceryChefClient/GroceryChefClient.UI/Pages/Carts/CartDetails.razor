@@ -59,18 +59,25 @@
               AllowFiltering="false"
               AllowPaging="true"
               AllowSorting="false">
-            <GridColumn TItem="CartDetailGridViewModel"
-                        HeaderText="Name"
-                        PropertyName="Name">
-                @context.Name
-            </GridColumn>
-            <GridColumn TItem="CartDetailGridViewModel"
-                        HeaderText="Is Bought"
-                        PropertyName="IsBought">
-                <ChildContent>
-                    <Switch @bind-Value="@context.IsBought" />
-                </ChildContent>
-            </GridColumn>
+            <GridColumns>
+                <GridColumn TItem="CartDetailGridViewModel"
+                            HeaderText="Name"
+                            PropertyName="Name">
+                    @context.Name
+                </GridColumn>
+                <GridColumn TItem="CartDetailGridViewModel"
+                            HeaderText="Quantity"
+                            PropertyName="Quantity">
+                    @context.Quantity
+                </GridColumn>
+                <GridColumn TItem="CartDetailGridViewModel"
+                            HeaderText="Is Bought"
+                            PropertyName="IsBought">
+                    <ChildContent>
+                        <Switch @bind-Value="@context.IsBought" />
+                    </ChildContent>
+                </GridColumn>
+            </GridColumns>
         </Grid>
     </CardBody>
     <CardFooter>
@@ -100,30 +107,32 @@
        UseStaticBackdrop="true"
        CloseOnEscape="false">
     <BodyTemplate>
-        <Grid @ref="cartIngredientSelectionGrid"
-              TItem="CartIngredientSelectionGridViewModel"
-              Class="table table-hover table-bordered"
-              DataProvider="CartIngredientSelectionDataProvider"
-              SelectionMode="GridSelectionMode.Multiple"
-              @bind-SelectedItems="@selectedIngredients"
-              AllowSelection="true"
-              AllowPaging="true"
-              AllowFiltering="false"
-              AllowSorting="false"
-              Responsive="true">
-            <GridColumns>
-                <GridColumn TItem="CartIngredientSelectionGridViewModel"
-                            HeaderText="Id"
-                            PropertyName="Id">
-                    @context.Id
-                </GridColumn>
-                <GridColumn TItem="CartIngredientSelectionGridViewModel"
-                            HeaderText="Ingredient Name"
-                            PropertyName="Name">
-                    @context.Name
-                </GridColumn>
-            </GridColumns>
-        </Grid>
+        <div class="row">
+            <div class="col-sm-3">
+                <label>Ingredient:</label>
+            </div>
+            <div class="col-sm-9">
+                <InputSelect class="form-control" @bind-Value="@selectedIngredient.Id">
+                    <option value="@string.Empty">
+                        Choose ingredient...
+                    </option>
+                    @foreach (var ingredient in ingredientOptions)
+                    {
+                        <option value="@ingredient.Id">
+                            @ingredient.Name
+                        </option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label>Quantity:</label>
+            </div>
+            <div class="col-sm-9">
+                <NumberInput TValue="int" @bind-Value="@selectedIngredient.Quantity" />
+            </div>
+        </div>
     </BodyTemplate>
     <FooterTemplate>
         <Button Color="ButtonColor.Secondary"
@@ -145,8 +154,8 @@
     private Grid<CartDetailGridViewModel> grid = default!;
     private List<CartDetailGridViewModel> gridDataSource = [];
 
-    private Grid<CartIngredientSelectionGridViewModel> cartIngredientSelectionGrid = default!;
-    private HashSet<CartIngredientSelectionGridViewModel> selectedIngredients = [];
+    private CartIngredientSelectedViewModel selectedIngredient = default!;
+    private List<IngredientDto> ingredientOptions = [];
 
     private Modal addIngredientModal = default!;
 
@@ -226,7 +235,8 @@
 
     private async Task ShowAddIngrdientModal()
     {
-        selectedIngredients.Clear();
+        selectedIngredient = new();
+        ingredientOptions = await ingredientService.GetIngredientsForOptions();
         await addIngredientModal.ShowAsync();
     }
 
@@ -235,43 +245,20 @@
         await addIngredientModal.HideAsync();
     }
 
-    private async Task<GridDataProviderResult<CartIngredientSelectionGridViewModel>> CartIngredientSelectionDataProvider(
-        GridDataProviderRequest<CartIngredientSelectionGridViewModel> request)
-    {
-        PaginationResult<IngredientDto> result = await ingredientService.GetIngredientsWithoutQuery(
-            request.PageNumber,
-            request.PageSize,
-            request.CancellationToken);
-        return await Task.FromResult(
-            new GridDataProviderResult<CartIngredientSelectionGridViewModel>()
-                {
-                    Data = result.Items.Select(i =>
-            new CartIngredientSelectionGridViewModel
-                    {
-                        Id = i.Id,
-                        Name = i.Name
-                    }),
-                    TotalCount = result.TotalCount
-                });
-    }
-
     private async Task ImportIngredients()
     {
-        if (selectedIngredients is null || selectedIngredients.Count == 0)
+        if (selectedIngredient is null)
         {
             return;
         }
-
-        foreach (CartIngredientSelectionGridViewModel ingredient in selectedIngredients)
-        {
-            gridDataSource.Add(new CartDetailGridViewModel
+        gridDataSource.Add(
+            new CartDetailGridViewModel
                 {
-                    IngredientId = ingredient.Id,
-                    Name = ingredient.Name,
-                    IsBought = false
+                    IngredientId = selectedIngredient.Id,
+                    Name = ingredientOptions.First(i => i.Id == selectedIngredient.Id)?.Name ?? string.Empty,
+                    Quantity = selectedIngredient.Quantity,
+                    IsBought = false,
                 });
-        }
-
         await grid.RefreshDataAsync();
         await CloseAddIngrdientModal();
     }
