@@ -73,9 +73,31 @@
                 <GridColumn TItem="CartDetailGridViewModel"
                             HeaderText="Is Bought"
                             PropertyName="IsBought">
-                    <ChildContent>
-                        <Switch @bind-Value="@context.IsBought" />
-                    </ChildContent>
+                    <!--無法這樣用-->
+                    <!--改成按鈕，用context.IsBought來判斷要顯示已購買還是尚未購買的按鈕-->
+                    @if (context.IsBought)
+                    {
+                        <Button Color="ButtonColor.Warning"
+                                @onclick="(() => SetBought(context.IngredientId, false))">
+                            <Icon Name="IconName.BoxArrowUp" />
+                            Not Bought
+                        </Button>
+                    }
+                    else
+                    {
+                        <Button Color="ButtonColor.Success"
+                                @onclick="(() => SetBought(context.IngredientId, true))">
+                            <Icon Name="IconName.BoxArrowDown" />
+                            Bought
+                        </Button>
+                    }
+                </GridColumn>
+                <GridColumn TItem="CartDetailGridViewModel"
+                            HeaderText="Action">
+                    <Button Color="ButtonColor.Danger">
+                        <Icon Name="IconName.Trash2Fill" />
+                        Delete
+                    </Button>
                 </GridColumn>
             </GridColumns>
         </Grid>
@@ -84,15 +106,9 @@
         <div class="row">
             <div class="col-sm-2">
                 <Button Type="ButtonType.Button"
-                        Color="ButtonColor.Secondary">
-                    <Icon Name="IconName.X" />
-                    Clear Cart
-                </Button>
-            </div>
-            <div class="col-sm-2">
-                <Button Type="ButtonType.Button"
                         Color="ButtonColor.Primary"
-                        @onclick="SaveCartWithIngredients">
+                        @onclick="SaveCartWithIngredients"
+                        Disabled="@disableAddIngredientButton">
                     <Icon Name="IconName.Save" />
                     Save Changes
                 </Button>
@@ -148,6 +164,8 @@
     </FooterTemplate>
 </Modal>
 
+<ConfirmDialog @ref="deleteDialog" />
+
 @code {
     private CartDetailViewModel cartDetailViewModel = default!;
 
@@ -161,10 +179,14 @@
 
     private bool disableAddIngredientButton = true;
 
+    private ConfirmDialog deleteDialog = default!;
+
     [Inject]
     private CartService cartService { get; set; } = default!;
     [Inject]
     private IngredientService ingredientService { get; set; } = default!;
+    [Inject]
+    private ModalService modalService { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -265,5 +287,80 @@
 
     private async Task SaveCartWithIngredients()
     {
+        if (string.IsNullOrWhiteSpace(CartId))
+        {
+            await ShowErrorModalAsync("Save ingredient", "Please select a cart");
+            return;
+        }
+
+        try
+        {
+            await cartService.UpsertCartIngredients(CartId, gridDataSource);
+            await ShowSaveSuccessModalAsync();
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorModalAsync("Save ingredient", ex.Message);
+        }
+    }
+
+    private async Task ShowSaveSuccessModalAsync()
+    {
+        var modalOptions = new ModalOption
+            {
+                Title = "Save Successful",
+                Message = "Your ingredient has been successfully saved.",
+                Type = ModalType.Success
+            };
+
+        await modalService.ShowAsync(modalOptions);
+    }
+
+    private async Task ShowClearSuccessModalAsync()
+    {
+        var modalOptions = new ModalOption
+            {
+                Title = "Clear Successful",
+                Message = "Your cart has been successfully clear.",
+                Type = ModalType.Success
+            };
+
+        await modalService.ShowAsync(modalOptions);
+    }
+
+    private async Task ShowErrorModalAsync(string title, string errorMessage)
+    {
+        var modalOptions = new ModalOption
+            {
+                Title = title,
+                Message = errorMessage,
+                Type = ModalType.Danger
+            };
+
+        await modalService.ShowAsync(modalOptions);
+    }
+
+    private async Task SetBought(string ingredientId, bool isBought)
+    {
+        if (string.IsNullOrWhiteSpace(CartId))
+        {
+            await ShowErrorModalAsync("Save ingredient", "Please select a cart");
+            return;
+        }
+
+        if (isBought)
+        {
+            try
+            {
+                await cartService.SetBoughtForIngredient(
+                    CartId,
+                    ingredientId);
+                await grid.RefreshDataAsync();
+            }
+            catch (Exception ex)
+            {
+                await ShowErrorModalAsync("Set bought", ex.Message);
+            }
+        }
     }
 }

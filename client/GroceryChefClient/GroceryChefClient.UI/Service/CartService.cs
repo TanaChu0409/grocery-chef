@@ -236,4 +236,68 @@ public sealed class CartService(
             throw;
         }
     }
+
+    public async Task UpsertCartIngredients(string cartId, List<CartDetailGridViewModel> cartDetailGrids)
+    {
+        try
+        {
+            string uri = $"{CartUri}/{cartId}/ingredients";
+            UpsertCartIngredientsDto upsertCart = new()
+            {
+                Details = cartDetailGrids
+                    .Select(cartDetail => new UpsertCartIngredientsDetailDto
+                    {
+                        IngredientId = cartDetail.IngredientId,
+                        Quantity = cartDetail.Quantity
+                    }).ToList()
+            };
+
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    await inMemoryTokenStore.GetTokenAsync());
+
+            HttpResponseMessage response = await httpClient.PutAsJsonAsync(
+                uri,
+                upsertCart);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+
+    public async Task SetBoughtForIngredient(string cartId, string ingredientId)
+    {
+        try
+        {
+            string uri = $"{CartUri}/{cartId}/ingredients/{ingredientId}/bought";
+
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    await inMemoryTokenStore.GetTokenAsync());
+
+            HttpResponseMessage response = await httpClient.PatchAsync(uri, null);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+        }
+        catch
+        {
+            throw;
+        }
+    }
 }
