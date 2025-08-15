@@ -274,12 +274,37 @@ public sealed class CartService(
         }
     }
 
-
     public async Task SetBoughtForIngredient(string cartId, string ingredientId)
     {
         try
         {
             string uri = $"{CartUri}/{cartId}/ingredients/{ingredientId}/bought";
+
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    await inMemoryTokenStore.GetTokenAsync());
+
+            HttpResponseMessage response = await httpClient.PatchAsync(uri, null);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public async Task SetUnBoughtForIngredient(string cartId, string ingredientId)
+    {
+        try
+        {
+            string uri = $"{CartUri}/{cartId}/ingredients/{ingredientId}/unbought";
 
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(

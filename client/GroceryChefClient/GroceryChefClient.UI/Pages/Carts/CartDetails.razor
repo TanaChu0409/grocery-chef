@@ -348,19 +348,21 @@
             return;
         }
 
-        if (isBought)
+        try
         {
-            try
+            if (isBought)
             {
-                await cartService.SetBoughtForIngredient(
-                    CartId,
-                    ingredientId);
-                await grid.RefreshDataAsync();
+                await cartService.SetBoughtForIngredient(CartId, ingredientId);
             }
-            catch (Exception ex)
+            else
             {
-                await ShowErrorModalAsync("Set bought", ex.Message);
+                await cartService.SetUnBoughtForIngredient(CartId, ingredientId);
             }
+            await grid.RefreshDataAsync();
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorModalAsync("Set bought", ex.Message);
         }
     }
 }

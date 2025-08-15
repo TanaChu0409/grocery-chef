@@ -96,6 +96,31 @@ public sealed class CartIngredientController(ApplicationDbContext dbContext) : C
         return NoContent();
     }
 
+    [HttpPatch("{ingredientId}/unbought")]
+    public async Task<IActionResult> SetUnboughtForIngredient(
+        string cartId,
+        string ingredientId)
+    {
+        CartIngredient? cartIngredient = await dbContext
+            .CartIngredients
+            .FirstOrDefaultAsync(ci =>
+                ci.CartId == cartId &&
+                ci.IngredientId == ingredientId);
+
+        if (cartIngredient is null)
+        {
+            return NotFound();
+        }
+
+        cartIngredient.IsBought = false;
+
+        dbContext.CartIngredients.Update(cartIngredient);
+
+        await dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
     [HttpDelete("{ingredientId}")]
     public async Task<ActionResult> DeleteIngredient(string cartId, string ingredientId)
     {
