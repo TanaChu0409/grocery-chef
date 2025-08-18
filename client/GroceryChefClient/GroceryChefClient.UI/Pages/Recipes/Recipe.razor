@@ -23,68 +23,69 @@
               AllowSorting="true"
               Responsive="true"
               EmptyText="No recipes yet? Time for the chef in you to shine!">
+            <GridColumns>
+                <GridColumn TItem="RecipeDto"
+                            HeaderText="Name"
+                            PropertyName="Name"
+                            SortString="name"
+                            SortKeySelector="@(item => item.Name)">
+                    @context.Name
+                </GridColumn>
 
-            <GridColumn TItem="RecipeDto"
-                        HeaderText="Name"
-                        PropertyName="Name"
-                        SortString="name"
-                        SortKeySelector="@(item => item.Name)">
-                @context.Name
-            </GridColumn>
+                <GridColumn TItem="RecipeDto"
+                            HeaderText="Description"
+                            PropertyName="Descriptions"
+                            SortString="description"
+                            SortKeySelector="@(item => item.Description)">
+                    @context.Description
+                </GridColumn>
 
-            <GridColumn TItem="RecipeDto"
-                        HeaderText="Description"
-                        PropertyName="Descriptions"
-                        SortString="description"
-                        SortKeySelector="@(item => item.Description)">
-                @context.Description
-            </GridColumn>
+                <GridColumn TItem="RecipeDto"
+                            HeaderText="Create Time"
+                            PropertyName="CreatedAtUtc"
+                            SortString="createdAtUtc"
+                            SortKeySelector="@(item => item.CreatedAtUtc)">
+                    @context.CreatedAtUtc.ToLocalTime()
+                </GridColumn>
 
-            <GridColumn TItem="RecipeDto"
-                        HeaderText="Create Time"
-                        PropertyName="CreatedAtUtc"
-                        SortString="createdAtUtc"
-                        SortKeySelector="@(item => item.CreatedAtUtc)">
-                @context.CreatedAtUtc.ToLocalTime()
-            </GridColumn>
+                <GridColumn TItem="RecipeDto"
+                            HeaderText="Update Time"
+                            PropertyName="UpdatedAtUtc"
+                            SortString="updatedAtUtc"
+                            SortKeySelector="@(item => item.UpdatedAtUtc)">
+                    @context.UpdatedAtUtc?.ToLocalTime()
+                </GridColumn>
 
-            <GridColumn TItem="RecipeDto"
-                        HeaderText="Update Time"
-                        PropertyName="UpdatedAtUtc"
-                        SortString="updatedAtUtc"
-                        SortKeySelector="@(item => item.UpdatedAtUtc)">
-                @context.UpdatedAtUtc?.ToLocalTime()
-            </GridColumn>
-
-            <GridColumn TItem="RecipeDto"
-                        HeaderText="Action"
-                        Filterable="false">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <Button Color="ButtonColor.Primary" @onclick="((args) => ShowEditRecipeComponet(args, context.Id))">
-                            <Icon Name="IconName.PencilFill" />
-                            Edit
-                        </Button>
+                <GridColumn TItem="RecipeDto"
+                            HeaderText="Action"
+                            Filterable="false">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <Button Color="ButtonColor.Primary" @onclick="((args) => ShowEditRecipeComponet(args, context.Id))">
+                                <Icon Name="IconName.PencilFill" />
+                                Edit
+                            </Button>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <Button Color="ButtonColor.Secondary"
-                                @onclick="((args) => ShowAddIngredient(args, context.Id))">
-                            <Icon Name="IconName.Plus" />
-                            Add ingredients
-                        </Button>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <Button Color="ButtonColor.Secondary"
+                                    @onclick="((args) => ShowAddIngredient(args, context.Id))">
+                                <Icon Name="IconName.Plus" />
+                                Add ingredients
+                            </Button>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <Button Color="ButtonColor.Danger" @onclick="((args) => ConfirmationDeleteRecipeAsync(args, context.Id))">
-                            <Icon Name="IconName.Trash2Fill" />
-                            Delete
-                        </Button>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <Button Color="ButtonColor.Danger" @onclick="((args) => ConfirmationDeleteRecipeAsync(args, context.Id))">
+                                <Icon Name="IconName.Trash2Fill" />
+                                Delete
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            </GridColumn>
+                </GridColumn>
+            </GridColumns>
         </Grid>
     </CardBody>
 </Card>

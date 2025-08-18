@@ -23,55 +23,56 @@
               AllowSorting="true"
               Responsive="true"
               EmptyText="So empty.. Time for a foodventure!">
-
-            <GridColumn TItem="IngredientDto"
-                        HeaderText="Ingredient Name"
-                        PropertyName="Name"
-                        SortString="name"
-                        SortKeySelector="@(item => item.Name)"
-                        FilterTextboxWidth="120">
-                @context.Name
-            </GridColumn>
-            <GridColumn TItem="IngredientDto"
-                        HeaderText="Shelf Life"
-                        PropertyName="ShelfLifeOfDate"
-                        SortString="shelfLifeOfDate"
-                        SortKeySelector="@(item => item.ShelfLifeOfDate)"
-                        FilterTextboxWidth="80">
-                @context.ShelfLifeOfDate
-            </GridColumn>
-            <GridColumn TItem="IngredientDto"
-                        HeaderText="Allergy"
-                        PropertyName="IsAllergy"
-                        SortString="isAllergy"
-                        SortKeySelector="@(item => item.IsAllergy)"
-                        FilterTextboxWidth="80">
-                @(context.IsAllergy ? "Yes" : "No")
-            </GridColumn>
-            <GridColumn TItem="IngredientDto"
-                        HeaderText="Create Time"
-                        PropertyName="CreatedAtUtc"
-                        SortString="createdAtUtc"
-                        SortKeySelector="@(item => item.CreatedAtUtc)"
-                        FilterTextboxWidth="120">
-                @context.CreatedAtUtc.ToLocalTime()
-            </GridColumn>
-            <GridColumn TItem="IngredientDto"
-                        HeaderText="Update Time"
-                        PropertyName="UpdatedAtUtc"
-                        SortString="updatedAtUtc"
-                        SortKeySelector="@(item => item.UpdatedAtUtc)"
-                        FilterTextboxWidth="120">
-                @context.UpdatedAtUtc?.ToLocalTime()
-            </GridColumn>
-            <GridColumn TItem="IngredientDto"
-                        HeaderText="Action"
-                        Filterable="false">
-                <Button Color="ButtonColor.Primary" @onclick="((args) => ShowEditIngredientComponet(args, context.Id))">
-                    <Icon Name="IconName.PencilFill" />
-                    Edit
-                </Button>
-            </GridColumn>
+            <GridColumns>
+                <GridColumn TItem="IngredientDto"
+                            HeaderText="Ingredient Name"
+                            PropertyName="Name"
+                            SortString="name"
+                            SortKeySelector="@(item => item.Name)"
+                            FilterTextboxWidth="120">
+                    @context.Name
+                </GridColumn>
+                <GridColumn TItem="IngredientDto"
+                            HeaderText="Shelf Life"
+                            PropertyName="ShelfLifeOfDate"
+                            SortString="shelfLifeOfDate"
+                            SortKeySelector="@(item => item.ShelfLifeOfDate)"
+                            FilterTextboxWidth="80">
+                    @context.ShelfLifeOfDate
+                </GridColumn>
+                <GridColumn TItem="IngredientDto"
+                            HeaderText="Allergy"
+                            PropertyName="IsAllergy"
+                            SortString="isAllergy"
+                            SortKeySelector="@(item => item.IsAllergy)"
+                            FilterTextboxWidth="80">
+                    @(context.IsAllergy ? "Yes" : "No")
+                </GridColumn>
+                <GridColumn TItem="IngredientDto"
+                            HeaderText="Create Time"
+                            PropertyName="CreatedAtUtc"
+                            SortString="createdAtUtc"
+                            SortKeySelector="@(item => item.CreatedAtUtc)"
+                            FilterTextboxWidth="120">
+                    @context.CreatedAtUtc.ToLocalTime()
+                </GridColumn>
+                <GridColumn TItem="IngredientDto"
+                            HeaderText="Update Time"
+                            PropertyName="UpdatedAtUtc"
+                            SortString="updatedAtUtc"
+                            SortKeySelector="@(item => item.UpdatedAtUtc)"
+                            FilterTextboxWidth="120">
+                    @context.UpdatedAtUtc?.ToLocalTime()
+                </GridColumn>
+                <GridColumn TItem="IngredientDto"
+                            HeaderText="Action"
+                            Filterable="false">
+                    <Button Color="ButtonColor.Primary" @onclick="((args) => ShowEditIngredientComponet(args, context.Id))">
+                        <Icon Name="IconName.PencilFill" />
+                        Edit
+                    </Button>
+                </GridColumn>
+            </GridColumns>
         </Grid>
     </CardBody>
 </Card>
@@ -185,7 +186,9 @@
     private IngredientViewModel editIngredientViewModel = new();
 
     [Inject]
-    private IngredientService ingredientService { get; set; }
+    private IngredientService ingredientService { get; set; } = default!;
+    [Inject]
+    private ModalService modalService { get; set; } = default!;
 
     private async Task<GridDataProviderResult<IngredientDto>> IngredientDataProvider(
         GridDataProviderRequest<IngredientDto> request)
@@ -243,10 +246,11 @@
                 });
 
             await this.OnHideCreateModalClick();
+            await ShowSaveSuccessModalAsync();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            await ShowErrorModalAsync("Add Ingredient Error", ex.Message);
         }
     }
 
@@ -273,5 +277,29 @@
         }
 
         await this.OnHideEditModalClick();
+    }
+
+    private async Task ShowSaveSuccessModalAsync()
+    {
+        var modalOptions = new ModalOption
+            {
+                Title = "Save Successful",
+                Message = "Your ingredient has been successfully saved.",
+                Type = ModalType.Success
+            };
+
+        await modalService.ShowAsync(modalOptions);
+    }
+
+    private async Task ShowErrorModalAsync(string title, string errorMessage)
+    {
+        var modalOptions = new ModalOption
+            {
+                Title = title,
+                Message = errorMessage,
+                Type = ModalType.Danger
+            };
+
+        await modalService.ShowAsync(modalOptions);
     }
 }

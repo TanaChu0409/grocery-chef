@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 
+
 <AuthorizeView>
     <Authorized>
         @if (isLoading)
@@ -16,6 +17,7 @@
     </NotAuthorized>
 </AuthorizeView>
 
+<ThemeSwitcher Position="DropdownMenuPosition.End" />
 @code {
     private UserDto? userDto;
     private bool isLoading = true;
