@@ -1,13 +1,12 @@
-﻿@using GroceryChefClient.UI.Dtos.Users
-@inject UserService userService
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
 <AuthorizeView>
     <Authorized>
-        @if (userDto is null)
+        @if (isLoading)
         {
             <span>Loading...</span>
-            @GetCurrentUserAsync()
         }
-        else
+        else if (userDto is not null)
         {
             <span>Welcome, @(userDto?.Name ?? string.Empty) <a href="/Logout">Logout</a></span>
         }
@@ -19,10 +18,14 @@
 
 @code {
     private UserDto? userDto;
+    private bool isLoading = true;
 
-    private async Task GetCurrentUserAsync()
+    [Inject]
+    private UserService userService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
     {
         userDto = await userService.GetCurrentUserAsync();
-        StateHasChanged();
+        isLoading = false;
     }
 }
