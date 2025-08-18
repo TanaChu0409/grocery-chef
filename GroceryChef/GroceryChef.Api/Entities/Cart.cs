@@ -87,7 +87,8 @@ public sealed class Cart
                     {
                         IngredientId = ci.IngredientId,
                         Name = GetIngredientName(ci.IngredientId),
-                        IsBought = ci.IsBought
+                        IsBought = ci.IsBought,
+                        Quantity = ci.Quantity,
                     })
                 .ToList()
         };

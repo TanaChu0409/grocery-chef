@@ -1,12 +1,7 @@
 ﻿@page "/carts/details"
 @attribute [Authorize]
-@using Microsoft.AspNetCore.Components.Forms
-@using BlazorBootstrap
+
 <h3>CartDetails</h3>
-<!--下拉選單，選擇購物清單-->
-<!--Grid呈現目前的內容-->
-<!--Grid提供刪除button或已購買的checkbox-->
-<!--提供一個新增食材的按鈕-->
 <Card>
     <CardHeader>
         <div class="row">
@@ -51,7 +46,6 @@
         </div>
     </CardHeader>
     <CardBody>
-        <!--Grid use client side not server side -->
         <Grid @ref="grid"
               TItem="CartDetailGridViewModel"
               Class="table table-hover table-bordered table-striped"
@@ -73,8 +67,6 @@
                 <GridColumn TItem="CartDetailGridViewModel"
                             HeaderText="Is Bought"
                             PropertyName="IsBought">
-                    <!--無法這樣用-->
-                    <!--改成按鈕，用context.IsBought來判斷要顯示已購買還是尚未購買的按鈕-->
                     @if (context.IsBought)
                     {
                         <Button Color="ButtonColor.Warning"
@@ -94,7 +86,8 @@
                 </GridColumn>
                 <GridColumn TItem="CartDetailGridViewModel"
                             HeaderText="Action">
-                    <Button Color="ButtonColor.Danger">
+                    <Button Color="ButtonColor.Danger"
+                            @onclick="(() => DeleteIngredient(context.IngredientId))">
                         <Icon Name="IconName.Trash2Fill" />
                         Delete
                     </Button>
@@ -102,7 +95,7 @@
             </GridColumns>
         </Grid>
     </CardBody>
-    <CardFooter>
+    @* <CardFooter>
         <div class="row">
             <div class="col-sm-2">
                 <Button Type="ButtonType.Button"
@@ -114,7 +107,7 @@
                 </Button>
             </div>
         </div>
-    </CardFooter>
+    </CardFooter> *@
 </Card>
 
 <Modal @ref="addIngredientModal"
@@ -225,7 +218,8 @@
             return;
         }
         disableAddIngredientButton = false;
-        var cartWithIngredients = await cartService.GetCartIngredients(cartDetailViewModel.CartId);
+        List<CartDetailGridViewModel> cartWithIngredients =
+            await cartService.GetCartIngredients(cartDetailViewModel.CartId);
         gridDataSource.AddRange(cartWithIngredients);
 
         if (grid is not null)
@@ -283,6 +277,7 @@
                 });
         await grid.RefreshDataAsync();
         await CloseAddIngrdientModal();
+        await SaveCartWithIngredients();
     }
 
     private async Task SaveCartWithIngredients()
@@ -358,11 +353,55 @@
             {
                 await cartService.SetUnBoughtForIngredient(CartId, ingredientId);
             }
-            await grid.RefreshDataAsync();
+            await RefreshGridDataSource();
         }
         catch (Exception ex)
         {
             await ShowErrorModalAsync("Set bought", ex.Message);
+        }
+    }
+
+    private async Task RefreshGridDataSource()
+    {
+        if (string.IsNullOrWhiteSpace(cartDetailViewModel.CartId))
+        {
+            return;
+        }
+
+        gridDataSource.Clear();
+        List<CartDetailGridViewModel> cartWithIngredients =
+            await cartService.GetCartIngredients(cartDetailViewModel.CartId);
+        gridDataSource.AddRange(cartWithIngredients);
+
+        if (grid is not null)
+        {
+            await grid.RefreshDataAsync();
+        }
+    }
+
+    private async Task DeleteIngredient(string ingredientId)
+    {
+        if (string.IsNullOrWhiteSpace(CartId))
+        {
+            await ShowErrorModalAsync("Delete ingredient", "Please select a cart");
+            return;
+        }
+
+        try
+        {
+            bool deleteConfirmation = await deleteDialog.ShowAsync(
+                title: "Are you sure you want to delete this?",
+                message1: "Once deleted can not be rolled back.",
+                message2: "Do you want to proceed?");
+            if (deleteConfirmation)
+            {
+                await cartService.DeleteIngredientFromCart(CartId, ingredientId);
+                await RefreshGridDataSource();
+            }
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorModalAsync("Delete ingredient", ex.Message);
         }
     }
 }

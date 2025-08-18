@@ -218,7 +218,8 @@ public sealed class CartService(
                 {
                     IngredientId = ingredient.IngredientId,
                     Name = ingredient.Name,
-                    IsBought = ingredient.IsBought
+                    IsBought = ingredient.IsBought,
+                    Quantity = ingredient.Quantity,
                 })
                 .ToList() ?? [];
 
@@ -312,6 +313,32 @@ public sealed class CartService(
                     await inMemoryTokenStore.GetTokenAsync());
 
             HttpResponseMessage response = await httpClient.PatchAsync(uri, null);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException httpEx)
+            when (httpEx.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            ((AuthProvider)authenticationStateProvider).NotifyUserLogout();
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public async Task DeleteIngredientFromCart(string cartId, string ingredientId)
+    {
+        try
+        {
+            string uri = $"{CartUri}/{cartId}/ingredients/{ingredientId}";
+
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    await inMemoryTokenStore.GetTokenAsync());
+
+            HttpResponseMessage response = await httpClient.DeleteAsync(uri);
 
             response.EnsureSuccessStatusCode();
         }

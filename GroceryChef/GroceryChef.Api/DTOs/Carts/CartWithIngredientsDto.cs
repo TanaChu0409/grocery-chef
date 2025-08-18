@@ -15,4 +15,5 @@ public sealed record CartIngredientsDetailDto
     public required string IngredientId { get; init; }
     public required string Name { get; init; }
     public required bool IsBought { get; init; }
+    public required int Quantity { get; init; }
 }
