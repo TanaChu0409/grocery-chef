@@ -84,42 +84,48 @@
        UseStaticBackdrop="true"
        CloseOnEscape="false">
     <BodyTemplate>
-        <div class="row">
-            <div class="col-sm-4">
-                <span>Name</span>
+        <EditForm EditContext="@createContext" OnValidSubmit="AddIngredientAsync">
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Name<span class="text-danger">*</span></span>
+                </div>
+                <div class="col-sm-6">
+                    <TextInput @bind-Value="@createIngredientViewModel.Name"
+                               Placeholder="Please enter ingredient name">
+                    </TextInput>
+                    <ValidationMessage For="@(() => createIngredientViewModel.Name)" />
+                </div>
             </div>
-            <div class="col-sm-6">
-                <TextInput @bind-Value="@createIngredientViewModel.Name"
-                           Placeholder="Please enter ingredient name">
-                </TextInput>
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Shelf life Of date<span class="text-danger">*</span></span>
+                </div>
+                <div class="col-sm-6">
+                    <NumberInput TValue="int"
+                                 @bind-Value="@createIngredientViewModel.ShelfLifeOfDate"
+                                 Placeholder="Please enter ingredient shelf life of date">
+                    </NumberInput>
+                    <ValidationMessage For="@(() => createIngredientViewModel.ShelfLifeOfDate)" />
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4">
-                <span>Shelf life Of date</span>
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Is allergy?</span>
+                </div>
+                <div class="col-sm-6">
+                    <RadioInput Name="IngredientIsAllergy"
+                                Label="Yes"
+                                @bind-Value="createIngredientViewModel.IsAllergy">
+                    </RadioInput>
+                    <RadioInput Name="IngredientIsAllergy"
+                                Label="No"
+                                @bind-Value="createIngredientViewModel.IsNotAllergy">
+                    </RadioInput>
+                </div>
             </div>
-            <div class="col-sm-6">
-                <NumberInput TValue="int"
-                             @bind-Value="@createIngredientViewModel.ShelfLifeOfDate"
-                             Placeholder="Please enter ingredient shelf life of date">
-                </NumberInput>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4">
-                <span>Is allergy?</span>
-            </div>
-            <div class="col-sm-6">
-                <RadioInput Name="IngredientIsAllergy"
-                            Label="Yes"
-                            @bind-Value="createIngredientViewModel.IsAllergy">
-                </RadioInput>
-                <RadioInput Name="IngredientIsAllergy"
-                            Label="No"
-                            @bind-Value="createIngredientViewModel.IsNotAllergy">
-                </RadioInput>
-            </div>
-        </div>
+        </EditForm>
     </BodyTemplate>
     <FooterTemplate>
         <Button Color="ButtonColor.Secondary" @onclick="OnHideCreateModalClick">Close</Button>
@@ -134,42 +140,47 @@
        UseStaticBackdrop="true"
        CloseOnEscape="false">
     <BodyTemplate>
-        <div class="row">
-            <div class="col-sm-4">
-                <span>Name</span>
+        <EditForm EditContext="@editContext" OnValidSubmit="EditIngredientAsync">
+            <DataAnnotationsValidator />
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Name</span>
+                </div>
+                <div class="col-sm-6">
+                    <TextInput @bind-Value="@editIngredientViewModel.Name"
+                               Placeholder="Please enter ingredient name">
+                    </TextInput>
+                    <ValidationMessage For="@(() => editIngredientViewModel.Name)" />
+                </div>
             </div>
-            <div class="col-sm-6">
-                <TextInput @bind-Value="@editIngredientViewModel.Name"
-                           Placeholder="Please enter ingredient name">
-                </TextInput>
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Shelf life Of date</span>
+                </div>
+                <div class="col-sm-6">
+                    <NumberInput TValue="int"
+                                 @bind-Value="@editIngredientViewModel.ShelfLifeOfDate"
+                                 Placeholder="Please enter ingredient shelf life of date">
+                    </NumberInput>
+                    <ValidationMessage For="@(() => editIngredientViewModel.ShelfLifeOfDate)" />
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4">
-                <span>Shelf life Of date</span>
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>Is allergy?</span>
+                </div>
+                <div class="col-sm-6">
+                    <RadioInput Name="IngredientIsAllergy"
+                                Label="Yes"
+                                @bind-Value="editIngredientViewModel.IsAllergy">
+                    </RadioInput>
+                    <RadioInput Name="IngredientIsAllergy"
+                                Label="No"
+                                @bind-Value="editIngredientViewModel.IsNotAllergy">
+                    </RadioInput>
+                </div>
             </div>
-            <div class="col-sm-6">
-                <NumberInput TValue="int"
-                             @bind-Value="@editIngredientViewModel.ShelfLifeOfDate"
-                             Placeholder="Please enter ingredient shelf life of date">
-                </NumberInput>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4">
-                <span>Is allergy?</span>
-            </div>
-            <div class="col-sm-6">
-                <RadioInput Name="IngredientIsAllergy"
-                            Label="Yes"
-                            @bind-Value="editIngredientViewModel.IsAllergy">
-                </RadioInput>
-                <RadioInput Name="IngredientIsAllergy"
-                            Label="No"
-                            @bind-Value="editIngredientViewModel.IsNotAllergy">
-                </RadioInput>
-            </div>
-        </div>
+        </EditForm>
     </BodyTemplate>
     <FooterTemplate>
         <Button Color="ButtonColor.Secondary" @onclick="OnHideEditModalClick">Close</Button>
@@ -184,6 +195,9 @@
 
     private IngredientViewModel createIngredientViewModel = new();
     private IngredientViewModel editIngredientViewModel = new();
+
+    private EditContext createContext;
+    private EditContext editContext;
 
     [Inject]
     private IngredientService ingredientService { get; set; } = default!;
@@ -224,6 +238,7 @@
     private async Task ShowAddIngredientComponet()
     {
         createIngredientViewModel = new();
+        createContext = new EditContext(createIngredientViewModel);
         await modalCreate.ShowAsync();
     }
 
@@ -237,16 +252,19 @@
     {
         try
         {
-            await ingredientService.AddIngredient(
-            new CreateIngredientDto
-                {
-                    Name = createIngredientViewModel.Name,
-                    ShelfLifeOfDate = createIngredientViewModel.ShelfLifeOfDate,
-                    IsAllergy = createIngredientViewModel.IsAllergy && !createIngredientViewModel.IsNotAllergy
-                });
+            if (createContext?.Validate() == true)
+            {
+                await ingredientService.AddIngredient(
+                    new CreateIngredientDto
+                        {
+                            Name = createIngredientViewModel.Name,
+                            ShelfLifeOfDate = createIngredientViewModel.ShelfLifeOfDate,
+                            IsAllergy = createIngredientViewModel.IsAllergy && !createIngredientViewModel.IsNotAllergy
+                        });
 
-            await this.OnHideCreateModalClick();
-            await ShowSaveSuccessModalAsync();
+                await this.OnHideCreateModalClick();
+                await ShowSaveSuccessModalAsync();
+            }
         }
         catch (Exception ex)
         {
@@ -258,6 +276,7 @@
     {
         IngredientDto ingredient = await ingredientService.GetIngredientAsync(id);
         editIngredientViewModel = ingredient.ToViewModel();
+        editContext = new EditContext(editIngredientViewModel);
         await modalEdit.ShowAsync();
     }
 
@@ -269,6 +288,11 @@
 
     private async Task EditIngredientAsync()
     {
+        if (editContext?.Validate() != true)
+        {
+            return;
+        }
+
         if (!string.IsNullOrWhiteSpace(editIngredientViewModel.Id))
         {
             await ingredientService.UpdateIngredient(

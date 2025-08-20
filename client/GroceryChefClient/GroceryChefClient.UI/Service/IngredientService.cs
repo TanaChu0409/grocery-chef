@@ -76,7 +76,8 @@ public sealed class IngredientService(
                 new AuthenticationHeaderValue(
                     "Bearer",
                     await inMemoryTokenStore.GetTokenAsync());
-            HttpResponseMessage response = await httpClient.GetAsync(IngredientUri);
+            string uri = $"{IngredientUri}?page=1&pageSize=1000";
+            HttpResponseMessage response = await httpClient.GetAsync(uri);
 
             response.EnsureSuccessStatusCode();
 
@@ -106,7 +107,8 @@ public sealed class IngredientService(
                 new AuthenticationHeaderValue(
                     "Bearer",
                     await inMemoryTokenStore.GetTokenAsync());
-            HttpResponseMessage response = await httpClient.GetAsync(IngredientUri);
+            string uri = $"{IngredientUri}?page=1&pageSize=1000";
+            HttpResponseMessage response = await httpClient.GetAsync(uri);
 
             response.EnsureSuccessStatusCode();
 
@@ -118,7 +120,6 @@ public sealed class IngredientService(
                 {
                     IngredientId = ingredient.Id,
                     IngredientName = ingredient.Name,
-                    // todo
                     Amount = 0,
                     Unit = 0
                 })

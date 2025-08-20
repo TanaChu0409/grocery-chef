@@ -346,6 +346,8 @@
     private IngredientService ingredientService { get; set; }
     [Inject]
     private RecipeService recipeService { get; set; }
+    [Inject]
+    private ModalService modalService { get; set; } = default!;
 
     private async Task<GridDataProviderResult<RecipeDto>> RecipeDataProvider(
         GridDataProviderRequest<RecipeDto> request)
@@ -495,6 +497,14 @@
 
     private async Task InsertIngredientToGrid()
     {
+        if (string.IsNullOrWhiteSpace(createNewIngredient.IngredientId))
+        {
+            await ShowErrorModalAsync(
+                "Add Ingredient Error",
+                "Please choose any ingredient");
+            return;
+        }
+
         RecipeIngredientDetailViewModel selectedItem = ingredients
             .First(i => i.IngredientId == createNewIngredient.IngredientId);
 
@@ -536,5 +546,29 @@
             selectedIngredients.Remove(ingredientToRemove);
         }
         recipeIngredientGrid.RefreshDataAsync();
+    }
+
+    private async Task ShowSaveSuccessModalAsync()
+    {
+        var modalOptions = new ModalOption
+            {
+                Title = "Save Successful",
+                Message = "Your recipe has been successfully saved.",
+                Type = ModalType.Success
+            };
+
+        await modalService.ShowAsync(modalOptions);
+    }
+
+    private async Task ShowErrorModalAsync(string title, string errorMessage)
+    {
+        var modalOptions = new ModalOption
+            {
+                Title = title,
+                Message = errorMessage,
+                Type = ModalType.Danger
+            };
+
+        await modalService.ShowAsync(modalOptions);
     }
 }
