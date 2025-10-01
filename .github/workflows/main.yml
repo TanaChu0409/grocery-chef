@@ -29,13 +29,13 @@ jobs:
         run: dotnet restore GroceryChef.sln
 
       - name: Build
-        run: dotnet build GroceryChef.sln --configuration Release --no-restore --output buildOutput
+        run: dotnet build GroceryChef.sln --configuration Release --no-restore
 
       - name: Test
         run: dotnet test GroceryChef.sln --configuration Release --no-restore --no-build
 
       - name: Publish
-        run: dotnet publish GroceryChef.sln --configuration Release --no-restore --no-build
+        run: dotnet publish GroceryChef.sln --configuration Release --no-restore --no-build -o buildOutput
 
       - name: Generate SBOM
         run: |
